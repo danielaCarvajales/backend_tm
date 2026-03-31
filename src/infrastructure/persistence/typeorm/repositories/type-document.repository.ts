@@ -88,7 +88,7 @@ export class TypeDocumentTypeOrmRepository implements ITypeDocumentRepository {
     idTypeDocument: number,
   ): Promise<number> {
     return this.documentRepository.count({
-      where: { typeDocuments: { idTypeDocument } },
+      where: { idTypeDocument },
     });
   }
 }

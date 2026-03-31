@@ -1,16 +1,6 @@
-import {
-  Body,
-  ConflictException,
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-  ParseIntPipe,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
+import {Body,ConflictException,Controller,Delete,Get,NotFoundException,Param,ParseIntPipe,Post,
+  Put,Query,
+  UseGuards,} from '@nestjs/common';
 import { CreateTypeDocumentDto } from '../../application/dto/type-document/create-type-document.dto';
 import { QueryTypeDocumentDto } from '../../application/dto/type-document/query-type-document.dto';
 import { UpdateTypeDocumentDto } from '../../application/dto/type-document/update-type-document.dto';
@@ -19,6 +9,8 @@ import { DeleteTypeDocumentUseCase } from '../../application/use-cases/type-docu
 import { GetTypeDocumentByIdUseCase } from '../../application/use-cases/type-document/get-type-document-by-id.use-case';
 import { ListTypeDocumentsUseCase } from '../../application/use-cases/type-document/list-type-documents.use-case';
 import { UpdateTypeDocumentUseCase } from '../../application/use-cases/type-document/update-type-document.use-case';
+import { RolesGuard } from 'src/infrastructure/auth/guards/roles.guard';
+import { Roles } from 'src/infrastructure/auth/decorators/roles.decorator';
 
 @Controller('type-documents')
 export class TypeDocumentController {
@@ -31,6 +23,8 @@ export class TypeDocumentController {
   ) {}
 
   @Post()
+  @UseGuards(RolesGuard)
+  @Roles('administrador')
   async create(@Body() dto: CreateTypeDocumentDto) {
     try {
       const entity = await this.createUseCase.execute(dto);
@@ -55,6 +49,8 @@ export class TypeDocumentController {
   }
 
   @Put(':id')
+  @UseGuards(RolesGuard)
+  @Roles('administrador')
   async update(
     @Param('id', ParseIntPipe) idTypeDocument: number,
     @Body() dto: UpdateTypeDocumentDto,
@@ -88,6 +84,8 @@ export class TypeDocumentController {
   }
 
   @Delete(':id')
+  @UseGuards(RolesGuard)
+  @Roles('administrador')
   async delete(@Param('id', ParseIntPipe) idTypeDocument: number) {
     try {
       await this.deleteUseCase.execute(idTypeDocument);

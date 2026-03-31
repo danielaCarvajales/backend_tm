@@ -11,7 +11,7 @@ export class TypeDocument {
     public nameTypeDocument: string;
 
 
-    @OneToMany(() => Document, (document) => document.typeDocuments)
+    @OneToMany(() => Document, (document) => document.documentType)
     public documents?: Document[];
 
     constructor(idTypeDocument: number, nameTypeDocument: string) {

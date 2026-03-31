@@ -17,6 +17,7 @@ import { CaseRecordService } from '../domain/services/case-record.service';
   exports: [
     GetOrCreateCurrentCaseUseCase,
     GetCaseRecordByIdUseCase,
+    CASE_RECORD_REPOSITORY,
   ],
   providers: [
     {

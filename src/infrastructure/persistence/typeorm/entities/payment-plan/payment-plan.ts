@@ -11,7 +11,7 @@ export class PaymentPlan {
     public name: string;
 
     @Column({ type: "text", name: "description", nullable: true })
-    public description: string;
+    public description: string | null;
 
     @Column({ type: "integer", name: "due_days", nullable: false })
     public dueDays: number;
@@ -19,12 +19,10 @@ export class PaymentPlan {
     @OneToMany(() => Payment, (payment) => payment.paymentPlan)
     public payments?: Payment[];
 
-    constructor(idPaymentPlan: number, name: string, description: string, dueDays: number) {
-        this.idPaymentPlan = idPaymentPlan;
+    constructor(name: string, description: string | null, dueDays: number) {
         this.name = name;
         this.description = description;
         this.dueDays = dueDays;
     }
-
 
 }

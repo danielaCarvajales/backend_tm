@@ -20,6 +20,13 @@ import { StateModule } from './presentation/state.module';
 import { FamilyRelationshipModule } from './presentation/family-relationship.module';
 import { CasePersonModule } from './presentation/case-person.module';
 import { TypeDocumentModule } from './presentation/type-document.module';
+import { PaymentPlanModule } from './presentation/payment-plan.module';
+import { DocumentModule } from './presentation/document.module';
+import { PersonDocumentsModule } from './presentation/person-documents.module';
+import { CaseDocumentsModule } from './presentation/case-documents.module';
+import { PaymentModule } from './presentation/payment.module';
+import { ContractModule } from './presentation/contract.module';
+import { EmailModule } from './presentation/email.module';
 
 @Module({
   imports: [
@@ -42,6 +49,13 @@ import { TypeDocumentModule } from './presentation/type-document.module';
     FamilyRelationshipModule,
     CasePersonModule,
     TypeDocumentModule,
+    PaymentPlanModule,
+    DocumentModule,
+    PersonDocumentsModule,
+    CaseDocumentsModule,
+    PaymentModule,
+    ContractModule,
+    EmailModule,
   ],
   controllers: [],
   providers: [
