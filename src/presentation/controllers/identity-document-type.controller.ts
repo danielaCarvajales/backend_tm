@@ -41,7 +41,7 @@ export class IdentityDocumentTypeController {
       };
     } catch (err) {
       if (err instanceof Error && err.message === 'IDENTITY_DOCUMENT_TYPE_NOT_FOUND') {
-        throw new NotFoundException('Identity document type not found');
+        throw new NotFoundException('Tipo de documento de identificación no encontrado');
       }
       throw err;
     }
@@ -57,13 +57,14 @@ export class IdentityDocumentTypeController {
       };
     } catch (err) {
       if (err instanceof Error && err.message === 'IDENTITY_DOCUMENT_TYPE_NOT_FOUND') {
-        throw new NotFoundException('Identity document type not found');
+        throw new NotFoundException('Tipo de documento de identificación no encontrado');
       }
       throw err;
     }
   }
 
   @Get()
+  @Public()
   async list(@Query() query: QueryIdentityDocumentTypeDto) {
     const result = await this.listUseCase.execute(query);
     return {
@@ -85,11 +86,12 @@ export class IdentityDocumentTypeController {
   }
 
   @Get(':id')
+  @Public()
   async getById(@Param('id', ParseIntPipe) idTypeIdentificationDocument: number) {
     const entity = await this.getByIdUseCase.execute(idTypeIdentificationDocument);
     
     if (!entity) {
-      throw new NotFoundException('Identity document type not found');
+      throw new NotFoundException('Tipo de documento de identificación no encontrado');
     }
     return {
       data: entity,

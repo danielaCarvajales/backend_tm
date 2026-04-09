@@ -1,12 +1,11 @@
 import type {
   CaseCreatedEmailTemplateContext,
+  OtpEmailTemplateContext,
   RecoveryEmailTemplateContext,
   WelcomeEmailTemplateContext,
 } from './email-template-contexts';
 
-/**
- * Puerto: renderizado de plantillas (sin HTML en casos de uso).
- */
+//Puerto: renderizado de plantillas
 export interface EmailTemplatePort {
   renderRecovery(context: RecoveryEmailTemplateContext): Promise<string>;
 
@@ -15,4 +14,6 @@ export interface EmailTemplatePort {
   renderCaseCreated(
     context: CaseCreatedEmailTemplateContext,
   ): Promise<string>;
+
+  renderOtp(context: OtpEmailTemplateContext): Promise<string>;
 }

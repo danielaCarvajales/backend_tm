@@ -1,9 +1,8 @@
-/** Comando de envío desacoplado del proveedor (capa dominio / contrato de aplicación). */
+//Comando de envío desacoplado del proveedor 
 export interface EmailAttachmentDto {
   filename: string;
   content: Buffer;
   contentType?: string;
-  /** Content-ID para imágenes inline (opcional). */
   cid?: string;
 }
 

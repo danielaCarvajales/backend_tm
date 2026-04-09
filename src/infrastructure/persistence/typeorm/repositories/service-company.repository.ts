@@ -25,7 +25,7 @@ export class ServiceCompanyTypeOrmRepository implements IServiceCompanyRepositor
 
   async update(entity: ServiceCompany): Promise<ServiceCompany> {
     if (entity.idService === undefined) {
-      throw new Error('Cannot update entity without id');
+      throw new Error('No se puede actualizar una entidad sin id');
     }
     await this.repository.update(
       { idServices: entity.idService },

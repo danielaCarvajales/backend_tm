@@ -40,7 +40,7 @@ export class StateController {
       };
     } catch (err) {
       if (err instanceof Error && err.message === 'STATE_NOT_FOUND') {
-        throw new NotFoundException('State not found');
+        throw new NotFoundException('Estado no encontrado');
       }
       throw err;
     }
@@ -55,7 +55,7 @@ export class StateController {
       };
     } catch (err) {
       if (err instanceof Error && err.message === 'STATE_NOT_FOUND') {
-        throw new NotFoundException('State not found');
+        throw new NotFoundException('Estado no encontrado');
       }
       throw err;
     }
@@ -85,7 +85,7 @@ export class StateController {
   async getById(@Param('id', ParseIntPipe) idState: number) {
     const entity = await this.getByIdUseCase.execute(idState);
     if (!entity) {
-      throw new NotFoundException('State not found');
+      throw new NotFoundException('Estado no encontrado');
     }
     return {
       data: entity,

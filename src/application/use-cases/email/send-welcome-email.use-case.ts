@@ -7,7 +7,6 @@ import { EMAIL_SENDER_PORT, EMAIL_TEMPLATE_PORT } from '../../tokens/email.token
 export interface SendWelcomeEmailParams {
   to: string;
   name: string;
-  /** Optional dashboard or login URL. */
   dashboardLink?: string;
 }
 
@@ -22,9 +21,6 @@ export class SendWelcomeEmailUseCase {
   ) {}
 
   async execute(params: SendWelcomeEmailParams): Promise<void> {
-    const footerHtml =
-      this.config.get<string>('EMAIL_FOOTER_HTML') ??
-      '<p>TM — Mensaje automático.</p>';
     const subject =
       this.config.get<string>('EMAIL_SUBJECT_WELCOME') ?? 'Bienvenido a TM';
     const title =
@@ -34,7 +30,6 @@ export class SendWelcomeEmailUseCase {
       title,
       dashboardLink: params.dashboardLink,
       buttonText: params.dashboardLink ? 'Ir al panel' : undefined,
-      footerHtml,
     });
     await this.emailSender.sendEmail({
       to: params.to,

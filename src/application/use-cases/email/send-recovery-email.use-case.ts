@@ -24,9 +24,6 @@ export class SendRecoveryEmailUseCase {
   ) {}
 
   async execute(params: SendRecoveryEmailParams): Promise<void> {
-    const footerHtml =
-      this.config.get<string>('EMAIL_FOOTER_HTML') ??
-      '<p>TM — Correo generado automáticamente. Por favor no responda a este mensaje.</p>';
     const subject =
       this.config.get<string>('EMAIL_SUBJECT_RECOVERY') ??
       'Recuperación de contraseña — TM';
@@ -37,7 +34,6 @@ export class SendRecoveryEmailUseCase {
       resetLink: params.resetLink,
       title,
       buttonText: 'Restablecer contraseña',
-      footerHtml,
     });
     await this.emailSender.sendEmail({
       to: params.to,

@@ -36,7 +36,7 @@ export class SendGridEmailAdapter implements EmailSenderPort {
         })),
       });
     } catch (err) {
-      this.logger.error('SendGrid send failed', err instanceof Error ? err.stack : err);
+      this.logger.error('Fallo al enviar correo con SendGrid', err instanceof Error ? err.stack : err);
       throw err;
     }
   }

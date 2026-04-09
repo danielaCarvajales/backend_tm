@@ -27,7 +27,7 @@ export class CaseDocumentsTypeOrmRepository implements ICaseDocumentsRepository 
 
   async update(entity: CaseDocuments): Promise<CaseDocuments> {
     if (entity.idCaseDocuments === undefined) {
-      throw new Error('Cannot update entity without id');
+      throw new Error('No se puede actualizar una entidad sin id');
     }
     await this.repository.update(
       { idCaseDocuments: entity.idCaseDocuments },

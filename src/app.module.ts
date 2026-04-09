@@ -27,11 +27,13 @@ import { CaseDocumentsModule } from './presentation/case-documents.module';
 import { PaymentModule } from './presentation/payment.module';
 import { ContractModule } from './presentation/contract.module';
 import { EmailModule } from './presentation/email.module';
+import { RedisModule } from './infrastructure/redis/redis.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
     ConnectionModule,
+    RedisModule,
     AuthModule,
     CaseRecordModule,
     CompanyModule,

@@ -27,7 +27,7 @@ export class PaymentTypeOrmRepository implements IPaymentRepository {
 
   async update(entity: Payment): Promise<void> {
     if (entity.idPayment === undefined) {
-      throw new Error('Cannot update entity without id');
+      throw new Error('No se puede actualizar una entidad sin id');
     }
     await this.repository.update(
       { idPayment: entity.idPayment },

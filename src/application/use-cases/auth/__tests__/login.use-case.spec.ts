@@ -57,6 +57,7 @@ describe('LoginUseCase', () => {
       delete: jest.fn(),
       findById: jest.fn(),
       findByUsernameAndCompany: jest.fn(),
+      findByUsernameCaseInsensitive: jest.fn(),
       findPaginated: jest.fn(),
     };
     personRepo = {

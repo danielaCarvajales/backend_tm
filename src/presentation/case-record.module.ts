@@ -10,9 +10,11 @@ import { UpdateCaseRecordUseCase } from '../application/use-cases/case-record/up
 import { CaseRecordController } from './controllers/case-record.controller';
 import { CaseRecordTypeOrmRepository } from '../infrastructure/persistence/typeorm/repositories/case-record.repository';
 import { CaseRecordService } from '../domain/services/case-record.service';
+import { EmailModule } from './email.module';
+import { PersonModule } from './person.module';
 
 @Module({
-  imports: [StateCaseModule],
+  imports: [StateCaseModule, EmailModule, PersonModule],
   controllers: [CaseRecordController],
   exports: [
     GetOrCreateCurrentCaseUseCase,

@@ -20,7 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     const secret = config.get<string>('JWT_SECRET');
     if (!secret || secret.length < 64) {
       throw new Error(
-        'JWT_SECRET must be set and at least 64 characters for security. Check .env',
+        'JWT_SECRET debe estar configurada y tener al menos 64 caracteres por seguridad. Revise .env',
       );
     }
     super({

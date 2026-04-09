@@ -48,6 +48,15 @@ export class CredentialsTypeOrmRepository implements ICredentialsRepository {
     return orm ? CredentialsMapper.toDomain(orm) : null;
   }
 
+  async findByUsernameCaseInsensitive(username: string): Promise<Credentials | null> {
+    const normalized = username.trim().toLowerCase();
+    const orm = await this.repository
+      .createQueryBuilder('c')
+      .where('LOWER(c.username) = :username', { username: normalized })
+      .getOne();
+    return orm ? CredentialsMapper.toDomain(orm) : null;
+  }
+
   // Finds paginated Credentials.
   async findPaginated(query: CredentialsListQuery): Promise<CredentialsPaginatedResult<Credentials>> {
     const { page, pageSize, search } = query;

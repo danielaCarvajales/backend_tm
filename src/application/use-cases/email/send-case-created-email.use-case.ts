@@ -22,9 +22,6 @@ export class SendCaseCreatedEmailUseCase {
   ) {}
 
   async execute(params: SendCaseCreatedEmailParams): Promise<void> {
-    const footerHtml =
-      this.config.get<string>('EMAIL_FOOTER_HTML') ??
-      '<p>TM — Notificación automática.</p>';
     const subject =
       this.config.get<string>('EMAIL_SUBJECT_CASE_CREATED') ??
       `Caso ${params.caseCode} creado — TM`;
@@ -37,7 +34,6 @@ export class SendCaseCreatedEmailUseCase {
       caseDetailLink: params.caseDetailLink,
       title,
       buttonText: params.caseDetailLink ? 'Ver caso' : undefined,
-      footerHtml,
     });
     await this.emailSender.sendEmail({
       to: params.to,

@@ -41,7 +41,7 @@ export class NationalityController {
       };
     } catch (err) {
       if (err instanceof Error && err.message === 'NATIONALITY_NOT_FOUND') {
-        throw new NotFoundException('Nationality not found');
+        throw new NotFoundException('Nacionalidad no encontrada');
       }
       throw err;
     }
@@ -56,7 +56,7 @@ export class NationalityController {
       };
     } catch (err) {
       if (err instanceof Error && err.message === 'NATIONALITY_NOT_FOUND') {
-        throw new NotFoundException('Nationality not found');
+        throw new NotFoundException('Nacionalidad no encontrada');
       }
       throw err;
     }
@@ -88,7 +88,7 @@ export class NationalityController {
   async getById(@Param('id', ParseIntPipe) idNacionality: number) {
     const entity = await this.getByIdUseCase.execute(idNacionality);
     if (!entity) {
-      throw new NotFoundException('Nationality not found');
+      throw new NotFoundException('Nacionalidad no encontrada');
     }
     return {
       data: entity,

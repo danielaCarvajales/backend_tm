@@ -7,8 +7,11 @@ import { ListCredentialsUseCase } from '../application/use-cases/credentials/lis
 import { UpdateCredentialsUseCase } from '../application/use-cases/credentials/update-credentials.use-case';
 import { CredentialsController } from './controllers/credentials.controller';
 import { CredentialsTypeOrmRepository } from '../infrastructure/persistence/typeorm/repositories/credentials.repository';
+import { EmailModule } from './email.module';
+import { PersonModule } from './person.module';
 
 @Module({
+  imports: [EmailModule, PersonModule],
   controllers: [CredentialsController],
   providers: [
     {

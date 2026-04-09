@@ -27,7 +27,7 @@ export class PersonDocumentsTypeOrmRepository implements IPersonDocumentsReposit
 
   async update(entity: PersonDocuments): Promise<PersonDocuments> {
     if (entity.idPersonDocuments === undefined) {
-      throw new Error('Cannot update entity without id');
+      throw new Error('No se puede actualizar una entidad sin id');
     }
     await this.repository.update(
       { idPersonDocuments: entity.idPersonDocuments },

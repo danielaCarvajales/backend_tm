@@ -8,7 +8,6 @@ export interface LayoutEmailTemplateContext {
   buttonText?: string;
   buttonLink?: string;
   status?: string;
-  footerHtml: string;
 }
 
 export interface RecoveryEmailBodyContext {
@@ -19,7 +18,6 @@ export type RecoveryEmailTemplateContext = RecoveryEmailBodyContext & {
   resetLink: string;
   title: string;
   buttonText: string;
-  footerHtml: string;
 };
 
 export interface WelcomeEmailBodyContext {
@@ -30,7 +28,6 @@ export type WelcomeEmailTemplateContext = WelcomeEmailBodyContext & {
   title: string;
   dashboardLink?: string;
   buttonText?: string;
-  footerHtml: string;
 };
 
 export interface CaseCreatedEmailBodyContext {
@@ -42,5 +39,14 @@ export interface CaseCreatedEmailBodyContext {
 export type CaseCreatedEmailTemplateContext = CaseCreatedEmailBodyContext & {
   title: string;
   buttonText?: string;
-  footerHtml: string;
+};
+
+export interface OtpEmailBodyContext {
+  name: string;
+  otpCode: string;
+  expiresMinutes: number;
+}
+
+export type OtpEmailTemplateContext = OtpEmailBodyContext & {
+  title: string;
 };

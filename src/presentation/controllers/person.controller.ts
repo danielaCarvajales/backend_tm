@@ -30,7 +30,7 @@ export class PersonController {
       };
     } catch (err) {
       if (err instanceof Error && err.message === 'PERSON_CODE_GENERATION_FAILED') {
-        throw new ConflictException('Could not generate unique person code. Please try again.');
+        throw new ConflictException('No se pudo generar un código de persona único. Intente nuevamente.');
       }
       throw err;
     }
@@ -49,7 +49,7 @@ export class PersonController {
       };
     } catch (err) {
       if (err instanceof Error && err.message === 'PERSON_NOT_FOUND') {
-        throw new NotFoundException('Person not found');
+        throw new NotFoundException('Persona no encontrada');
       }
       throw err;
     }
@@ -64,7 +64,7 @@ export class PersonController {
       };
     } catch (err) {
       if (err instanceof Error && err.message === 'PERSON_NOT_FOUND') {
-        throw new NotFoundException('Person not found');
+        throw new NotFoundException('Persona no encontrada');
       }
       throw err;
     }
@@ -103,11 +103,11 @@ export class PersonController {
   async getById(@Param('id', ParseIntPipe) idPerson: number) {
     const entity = await this.getByIdUseCase.execute(idPerson);
     if (!entity) {
-      throw new NotFoundException('Person not found');
+      throw new NotFoundException('Persona no encontrada');
     }
     return {
       data: entity,
-      message: 'Person found successfully',
+      message: 'Persona encontrada exitosamente',
     };
   }
 }

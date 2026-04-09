@@ -26,7 +26,7 @@ export class ContractTypeOrmRepository implements IContractRepository {
 
   async update(entity: Contract): Promise<void> {
     if (entity.idContract === undefined) {
-      throw new Error('Cannot update entity without id');
+      throw new Error('No se puede actualizar una entidad sin id');
     }
     await this.repository.update(
       { idContract: entity.idContract },

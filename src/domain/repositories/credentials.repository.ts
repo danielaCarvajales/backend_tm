@@ -23,5 +23,7 @@ export interface ICredentialsRepository {
   delete(id: number): Promise<void>;
   findById(id: number): Promise<Credentials | null>;
   findByUsernameAndCompany(username: string, codeCompany: number): Promise<Credentials | null>;
+  /** First match when the same email/username may exist across companies. */
+  findByUsernameCaseInsensitive(username: string): Promise<Credentials | null>;
   findPaginated(query: CredentialsListQuery): Promise<CredentialsPaginatedResult<Credentials>>;
 }

@@ -48,7 +48,7 @@ export class NodemailerEmailAdapter implements EmailSenderPort {
         })),
       });
     } catch (err) {
-      this.logger.error('Nodemailer send failed', err instanceof Error ? err.stack : err);
+      this.logger.error('Fallo al enviar correo con Nodemailer', err instanceof Error ? err.stack : err);
       throw err;
     }
   }

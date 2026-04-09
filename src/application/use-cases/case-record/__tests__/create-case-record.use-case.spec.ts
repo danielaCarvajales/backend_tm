@@ -1,7 +1,11 @@
 import { CreateCaseRecordDto } from '../../../dto/case-record/create-case-record.dto';
 import { CaseRecord } from '../../../../domain/entities/case-record.entity';
+import { Person } from '../../../../domain/entities/person.entity';
 import { ICaseRecordRepository } from '../../../../domain/repositories/case-record.repository';
 import { CaseRecordService } from '../../../../domain/services/case-record.service';
+import type { IPersonRepository } from '../../../../domain/repositories/person.repository';
+import { SendCaseCreatedEmailUseCase } from '../../email/send-case-created-email.use-case';
+import { ConfigService } from '@nestjs/config';
 import {
   CreateCaseRecordUseCase,
   CreateCaseRecordContext,
@@ -11,6 +15,9 @@ describe('CreateCaseRecordUseCase', () => {
   let useCase: CreateCaseRecordUseCase;
   let repository: jest.Mocked<ICaseRecordRepository>;
   let caseRecordService: { generateCaseCode: jest.Mock };
+  let persons: jest.Mocked<IPersonRepository>;
+  let sendCaseCreatedEmail: jest.Mocked<Pick<SendCaseCreatedEmailUseCase, 'execute'>>;
+  let config: { get: jest.Mock };
 
   const context: CreateCaseRecordContext = { holder: 100, codeCompany: 7 };
 
@@ -26,9 +33,23 @@ describe('CreateCaseRecordUseCase', () => {
       findPaginated: jest.fn(),
     };
     caseRecordService = { generateCaseCode: jest.fn() };
+    persons = {
+      save: jest.fn(),
+      update: jest.fn(),
+      delete: jest.fn(),
+      findById: jest.fn().mockResolvedValue(null),
+      findByIdWithRelations: jest.fn(),
+      findByPersonCode: jest.fn(),
+      findPaginated: jest.fn(),
+    };
+    sendCaseCreatedEmail = { execute: jest.fn().mockResolvedValue(undefined) };
+    config = { get: jest.fn().mockReturnValue(undefined) };
     useCase = new CreateCaseRecordUseCase(
       repository,
       caseRecordService as unknown as CaseRecordService,
+      persons,
+      sendCaseCreatedEmail as unknown as SendCaseCreatedEmailUseCase,
+      config as unknown as ConfigService,
     );
   });
 
@@ -104,5 +125,47 @@ describe('CreateCaseRecordUseCase', () => {
 
     expect(repository.findByCaseCode).toHaveBeenCalledTimes(10);
     expect(repository.save).not.toHaveBeenCalled();
+  });
+
+  it('envía correo de caso creado al titular cuando tiene email', async () => {
+    const caseCode = 'CAS88888';
+    caseRecordService.generateCaseCode.mockReturnValue(caseCode);
+    repository.findByCaseCode.mockResolvedValue(null);
+    const saved = new CaseRecord(
+      42,
+      caseCode,
+      context.holder,
+      null,
+      context.codeCompany,
+      1,
+      new Date(),
+      null,
+    );
+    repository.save.mockResolvedValue(saved);
+    persons.findById.mockResolvedValue(
+      new Person(
+        context.holder,
+        'P1',
+        'María Pérez',
+        1,
+        '1',
+        new Date(),
+        1,
+        '',
+        'maria@example.com',
+      ),
+    );
+    config.get.mockImplementation((key: string) =>
+      key === 'EMAIL_CASE_DETAIL_BASE_URL' ? 'https://app.test/cases' : undefined,
+    );
+
+    await useCase.execute(new CreateCaseRecordDto(), context);
+
+    expect(sendCaseCreatedEmail.execute).toHaveBeenCalledWith({
+      to: 'maria@example.com',
+      name: 'María Pérez',
+      caseCode,
+      caseDetailLink: 'https://app.test/cases/42',
+    });
   });
 });

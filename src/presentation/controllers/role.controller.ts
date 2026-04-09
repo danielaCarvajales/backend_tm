@@ -7,6 +7,7 @@ import { DeleteRoleUseCase } from '../../application/use-cases/role/delete-role.
 import { GetRoleByIdUseCase } from '../../application/use-cases/role/get-role-by-id.use-case';
 import { ListRolesUseCase } from '../../application/use-cases/role/list-roles.use-case';
 import { UpdateRoleUseCase } from '../../application/use-cases/role/update-role.use-case';
+import { Public } from 'src/infrastructure/auth/decorators/public.decorator';
 
 @Controller('roles')
 export class RoleController {
@@ -59,6 +60,7 @@ export class RoleController {
   }
 
   @Get()
+  @Public()
   async list(@Query() query: QueryRoleDto) {
     const result = await this.listUseCase.execute(query);
     return {
