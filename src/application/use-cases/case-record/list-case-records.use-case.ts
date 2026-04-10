@@ -1,5 +1,9 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {CaseRecordPaginatedResult, CaseRecordWithRelations, ICaseRecordRepository} from '../../../domain/repositories/case-record.repository';
+import {
+  CaseRecordPaginatedResult,
+  CaseRecordWithRelations,
+  ICaseRecordRepository,
+} from '../../../domain/repositories/case-record.repository';
 import { QueryCaseRecordDto } from '../../dto/case-record/query-case-record.dto';
 import { CASE_RECORD_REPOSITORY } from '../../tokens/case-record.repository.token';
 
@@ -24,7 +28,7 @@ export class ListCaseRecordsUseCase {
       pageSize: query.pageSize ?? 10,
       search: query.search,
       holderFilter: isCliente ? userId : undefined,
-      codeCompanyFilter: isCliente ? codeCompany : undefined,
+      codeCompanyFilter: codeCompany,
     };
 
     return this.repository.findPaginated(domainQuery);

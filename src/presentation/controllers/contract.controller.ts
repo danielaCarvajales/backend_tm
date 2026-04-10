@@ -42,7 +42,6 @@ export class ContractController {
     private readonly getCaseRecordByIdUseCase: GetCaseRecordByIdUseCase,
   ) {}
 
-  /** Misma regla que el detalle del caso: titular (cliente), asesor o administrador. */
   private async verifyCaseAccessForContract(
     idCase: number,
     user: JwtPayload,
@@ -51,6 +50,7 @@ export class ContractController {
       idCase,
       user.userId,
       user.role,
+      user.codeCompany,
     );
     if (!caseRecord) {
       throw new NotFoundException('Caso no encontrado');
@@ -59,7 +59,7 @@ export class ContractController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async create(@Body() dto: CreateContractDto) {
     try {
       const data = await this.createUseCase.execute(dto);
@@ -90,7 +90,7 @@ export class ContractController {
 
   @Put(':id')
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async update(
     @Param('id', ParseIntPipe) idContract: number,
     @Body() dto: UpdateContractDto,
@@ -111,7 +111,7 @@ export class ContractController {
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async delete(@Param('id', ParseIntPipe) idContract: number) {
     try {
       await this.deleteUseCase.execute(idContract);
@@ -128,7 +128,6 @@ export class ContractController {
 
   @Get()
   @UseGuards(RolesGuard)
-  @Roles('administrador', 'asesor', 'cliente')
   async list(
     @Query() query: QueryContractDto,
     @CurrentUser() user: JwtPayload,
@@ -137,7 +136,7 @@ export class ContractController {
     if (role === 'cliente') {
       if (query.idCase === undefined || query.idCase === null) {
         throw new ForbiddenException(
-          'Debe indicar el id del caso (idCase) para listar contratos',
+          'Debe indicar el id del caso para listar contratos',
         );
       }
       await this.verifyCaseAccessForContract(query.idCase, user);
@@ -159,7 +158,6 @@ export class ContractController {
 
   @Get('by-case/:idCase')
   @UseGuards(RolesGuard)
-  @Roles('administrador', 'asesor', 'cliente')
   async listByCase(
     @Param('idCase', ParseIntPipe) idCase: number,
     @Query() query: QueryContractDto,
@@ -195,7 +193,6 @@ export class ContractController {
 
   @Get(':id')
   @UseGuards(RolesGuard)
-  @Roles('administrador', 'asesor', 'cliente')
   async getById(
     @Param('id', ParseIntPipe) idContract: number,
     @CurrentUser() user: JwtPayload,

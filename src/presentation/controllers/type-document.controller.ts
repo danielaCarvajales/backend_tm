@@ -24,7 +24,7 @@ export class TypeDocumentController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async create(@Body() dto: CreateTypeDocumentDto) {
     try {
       const entity = await this.createUseCase.execute(dto);
@@ -50,7 +50,7 @@ export class TypeDocumentController {
 
   @Put(':id')
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async update(
     @Param('id', ParseIntPipe) idTypeDocument: number,
     @Body() dto: UpdateTypeDocumentDto,
@@ -85,7 +85,7 @@ export class TypeDocumentController {
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async delete(@Param('id', ParseIntPipe) idTypeDocument: number) {
     try {
       await this.deleteUseCase.execute(idTypeDocument);

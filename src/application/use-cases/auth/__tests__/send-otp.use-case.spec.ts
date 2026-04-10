@@ -84,7 +84,7 @@ describe('SendOtpUseCase', () => {
     );
     credentialsRepo.findByUsernameCaseInsensitive.mockResolvedValue(cred);
     personRepo.findById.mockResolvedValue(
-      new Person(5, 'P1', 'Jane Doe', 1, 'x', new Date(), 1, '', ''),
+      new Person(5, 1, 'P1', 'Jane Doe', 1, 'x', new Date(), 1, '', ''),
     );
     const result = await useCase.execute(dto, ip);
     expect(result.data).toBeNull();
@@ -93,6 +93,7 @@ describe('SendOtpUseCase', () => {
       'user@example.com',
       'Jane Doe',
       '111222',
+      'es',
     );
     expect(audit.logRequest).toHaveBeenCalledWith(
       expect.objectContaining({ outcome: 'otp_sent' }),

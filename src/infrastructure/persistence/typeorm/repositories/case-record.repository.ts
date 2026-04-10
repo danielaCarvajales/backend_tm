@@ -10,6 +10,7 @@ import {
 } from '../../../../domain/repositories/case-record.repository';
 import { CaseRecord as CaseRecordOrm } from '../entities/case-record/case-record';
 import { CaseRecordMapper } from '../mappers/case-record.mapper';
+import { mapCaseRecordContracts } from '../mappers/contract-embed.mapper';
 
 @Injectable()
 export class CaseRecordTypeOrmRepository implements ICaseRecordRepository {
@@ -35,6 +36,7 @@ export class CaseRecordTypeOrmRepository implements ICaseRecordRepository {
         agent: entity.agent,
         idStateCase: entity.idStateCase,
         closingDate: entity.closingDate,
+        amount: entity.amount,
       },
     );
     const updated = await this.findById(entity.idCase);
@@ -84,6 +86,7 @@ export class CaseRecordTypeOrmRepository implements ICaseRecordRepository {
         'casePersons.person.typeDocument',
         'casePersons.person.nationality',
         'casePersons.familyRelationship',
+        'contracts',
       ],
       order: { createdAt: 'DESC' },
       take: 1,
@@ -113,6 +116,7 @@ export class CaseRecordTypeOrmRepository implements ICaseRecordRepository {
         'casePersons.person.typeDocument',
         'casePersons.person.nationality',
         'casePersons.familyRelationship',
+        'contracts',
       ],
     });
     if (!orm) return null;
@@ -142,12 +146,14 @@ export class CaseRecordTypeOrmRepository implements ICaseRecordRepository {
       .leftJoinAndSelect('casePerson.typeDocument', 'casePersonTypeDoc')
       .leftJoinAndSelect('casePerson.nationality', 'casePersonNationality')
       .leftJoinAndSelect('casePersons.familyRelationship', 'casePersonFr')
+      .leftJoinAndSelect('cr.contracts', 'caseContracts')
       .select([
         'cr.idCase',
         'cr.caseCode',
         'cr.holder',
         'cr.agent',
         'cr.codeCompany',
+        'cr.amount',
         'cr.idStateCase',
         'cr.createdAt',
         'cr.closingDate',
@@ -206,6 +212,11 @@ export class CaseRecordTypeOrmRepository implements ICaseRecordRepository {
         'casePersonNationality.name',
         'casePersonFr.idFamilyRelationship',
         'casePersonFr.nameFamilyRelationship',
+        'caseContracts.idContract',
+        'caseContracts.contractCode',
+        'caseContracts.idCase',
+        'caseContracts.digitalSignature',
+        'caseContracts.createdAt',
       ]);
 
     if (holderFilter !== undefined) {
@@ -250,6 +261,7 @@ export class CaseRecordTypeOrmRepository implements ICaseRecordRepository {
       holder: orm.holder,
       agent: orm.agent ?? null,
       codeCompany: orm.codeCompany,
+      amount: String(orm.amount),
       idStateCase: orm.idStateCase,
       createdAt: orm.createdAt,
       closingDate: orm.closingDate ?? null,
@@ -372,6 +384,7 @@ export class CaseRecordTypeOrmRepository implements ICaseRecordRepository {
         familyRelationshipName:
           cp.familyRelationship?.nameFamilyRelationship ?? '',
       })),
+      contracts: mapCaseRecordContracts(orm.contracts),
     };
   }
 }

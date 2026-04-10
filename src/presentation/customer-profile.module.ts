@@ -8,8 +8,10 @@ import { ListCustomerProfilesUseCase } from '../application/use-cases/customer-p
 import { UpdateCustomerProfileUseCase } from '../application/use-cases/customer-profile/update-customer-profile.use-case';
 import { CustomerProfileController } from './controllers/customer-profile.controller';
 import { CustomerProfileTypeOrmRepository } from '../infrastructure/persistence/typeorm/repositories/customer-profile.repository';
+import { PersonRoleModule } from './person-role.module';
 
 @Module({
+  imports: [PersonRoleModule],
   controllers: [CustomerProfileController],
   providers: [
     CustomerProfileService,
@@ -23,6 +25,6 @@ import { CustomerProfileTypeOrmRepository } from '../infrastructure/persistence/
     GetCustomerProfileByIdUseCase,
     ListCustomerProfilesUseCase,
   ],
-  exports: [CUSTOMER_PROFILE_REPOSITORY],
+  exports: [CUSTOMER_PROFILE_REPOSITORY, CreateCustomerProfileUseCase],
 })
 export class CustomerProfileModule {}

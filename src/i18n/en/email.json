@@ -1,0 +1,38 @@
+{
+  "common": {
+    "greetingPrefix": "Hello",
+    "brandAlt": "TM"
+  },
+  "footer": {
+    "linkInstitutionTitle": "Institution",
+    "linkWebTitle": "Website",
+    "linkPortalTitle": "Portal",
+    "rightsLine": "© {copyrightYear} {companyName}. {rightsSuffix}",
+    "rightsSuffix": "ALL RIGHTS RESERVED."
+  },
+  "welcome": {
+    "subject": "Welcome to TM",
+    "heading": "Welcome to TM",
+    "buttonDashboard": "Go to dashboard",
+    "bodyWithDashboard": "<p>Welcome to <strong>TM</strong>!</p><p>We are pleased to let you know that your registration has been completed successfully.You can now log in to the platform using your login credentials.</p><p><strong>Username:</strong> {username}<br/><strong>Password:</strong> {password}</p><p>Use these credentials to sign in. For your security, we recommend that you <strong>change your password</strong> after your first login. Keep these details in a safe place and do not share them with third parties.</p><p>Inside your account you can review your personal information, manage your data, and access all the services we have available for you.</p>",
+    "bodyWithoutDashboard": "<p>Welcome to <strong>TM</strong>!</p><p>We are pleased to let you know that your registration has been completed successfully.</p><p><strong>Username:</strong> {username}<br/><strong>Password:</strong> {password}</p><p>Use these credentials to sign in. For your security, we recommend that you <strong>change your password</strong> after your first login. We also recommend keeping them in a safe place and not sharing them with third parties.</p><p>Thank you for trusting us!</p>"
+  },
+  "recovery": {
+    "subject": "Password recovery — TM",
+    "heading": "Password recovery",
+    "buttonReset": "Reset password",
+    "bodyHtml": "<p>We received a request to <strong>reset the password</strong> for your TM account.</p><p>If this was you, use the button in this email to continue. The link expires according to the applicable security policy.</p><p>If you <strong>did not</strong> request this change, you can ignore this message; your current password will remain valid.</p>"
+  },
+  "caseCreated": {
+    "subject": "Case {caseCode} created — TM",
+    "heading": "New case registered",
+    "buttonViewCase": "View case",
+    "bodyWithLink": "<p>A <strong>new case with code {caseCode}</strong> has been registered in the system.</p><p>From now on, you can fully manage your case, including linking people, managing information, attaching and reviewing documents, and following up on your process.</p><p>Thank you for trusting TM with your process.</p>",
+    "bodyWithoutLink": "<p>A <strong>new case with code {caseCode}</strong> has been registered in the system.</p><p>Thank you for trusting TM with your process.</p>"
+  },
+  "otp": {
+    "subject": "Your verification code — TM",
+    "heading": "Verification code",
+    "bodyHtml": "<p style=\"margin:0 0 12px;font-family:Georgia,Times New Roman,serif;font-weight:400;\">Your password verification code is:</p><p style=\"margin:16px 0;font-family:Georgia,Times New Roman,serif;font-size:30px;font-weight:400;color:#0d47a1;text-align:center;\">{otpCode}</p><p style=\"margin:0 0 8px;font-family:Georgia,Times New Roman,serif;font-size:14px;font-weight:400;\">This code is valid for <strong>{expiresMinutes} minutes</strong>. For security reasons, do not share it with anyone.</p>"
+  }
+}

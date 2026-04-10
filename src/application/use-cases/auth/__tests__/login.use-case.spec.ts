@@ -83,6 +83,7 @@ describe('LoginUseCase', () => {
       update: jest.fn(),
       delete: jest.fn(),
       findById: jest.fn(),
+      findByIdForCompany: jest.fn(),
       findByCodeCustomer: jest.fn(),
       findByIdPersonRole: jest.fn(),
       findFullProfileByIdPersonRole: jest.fn(),
@@ -203,6 +204,7 @@ describe('LoginUseCase', () => {
     personRepo.findById.mockResolvedValue(
       new Person(
         100,
+        1,
         'P001',
         'Nombre',
         1,
@@ -248,6 +250,7 @@ describe('LoginUseCase', () => {
     personRepo.findById.mockResolvedValue(
       new Person(
         100,
+        1,
         'P001',
         'Nombre',
         1,

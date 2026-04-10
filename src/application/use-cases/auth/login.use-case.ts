@@ -103,7 +103,10 @@ export class LoginUseCase {
     const { idPersonRole, roleName: role } = activePersonRole;
 
     // 6. Get email from Person
-    const person = await this.personRepo.findById(credentials.idPerson);
+    const person = await this.personRepo.findById(
+      credentials.idPerson,
+      codeCompany,
+    );
     const email = person?.email ?? '';
 
     await this.auditRepo.logLoginAttempt(username, codeCompany, true, ipAddress);

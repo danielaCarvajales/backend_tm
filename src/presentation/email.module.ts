@@ -10,10 +10,12 @@ import { SendWelcomeEmailUseCase } from '../application/use-cases/email/send-wel
 import type { EmailSenderPort } from '../domain/email/email-sender.port';
 import { createEmailSenderAdapter } from '../infrastructure/email/email-provider.factory';
 import { HandlebarsEmailTemplateService } from '../infrastructure/email/handlebars-email-template.service';
+import { EmailI18nService } from '../infrastructure/email/email-i18n.service';
 
 @Module({
-  imports: [ConfigModule],
+  imports: [ConfigModule],
   providers: [
+    EmailI18nService,
     HandlebarsEmailTemplateService,
     {
       provide: EMAIL_TEMPLATE_PORT,

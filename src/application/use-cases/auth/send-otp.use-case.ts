@@ -8,6 +8,7 @@ import { OtpAuditService } from '../../../infrastructure/otp/otp-audit.service';
 import { OtpRateLimitService } from '../../../infrastructure/otp/otp-rate-limit.service';
 import { OtpStoreService } from '../../../infrastructure/otp/otp-store.service';
 import { SendOtpEmailService } from '../../../infrastructure/email/send-otp-email.service';
+import { resolveEmailLanguageFromSources } from '../../../infrastructure/i18n/supported-email-locales';
 
 export const SEND_OTP_GENERIC_MESSAGE =
   'Si el correo está registrado, recibirá un código en breve.';
@@ -30,7 +31,11 @@ export class SendOtpUseCase {
     private readonly audit: OtpAuditService,
   ) {}
 
-  async execute(dto: SendOtpDto, clientIp: string): Promise<SendOtpResponse> {
+  async execute(
+    dto: SendOtpDto,
+    clientIp: string,
+    acceptLanguageHeader?: string | null,
+  ): Promise<SendOtpResponse> {
     const email = dto.email;
     try {
       await this.otpRateLimit.enforceEmailLimit(email);
@@ -66,8 +71,15 @@ export class SendOtpUseCase {
       return { data: null, message: SEND_OTP_GENERIC_MESSAGE };
     }
 
-    const person = await this.persons.findById(credential.idPerson);
+    const person = await this.persons.findById(
+      credential.idPerson,
+      credential.codeCompany,
+    );
     const displayName = person?.fullName?.trim() || 'Usuario';
+    const language = resolveEmailLanguageFromSources(
+      person?.language,
+      acceptLanguageHeader,
+    );
 
     let plainOtp: string;
     try {
@@ -82,7 +94,7 @@ export class SendOtpUseCase {
     }
 
     try {
-      await this.sendOtpEmail.send(email, displayName, plainOtp);
+      await this.sendOtpEmail.send(email, displayName, plainOtp, language);
     } catch {
       await this.otpStore.removeOtp(email);
       this.audit.logRequest({

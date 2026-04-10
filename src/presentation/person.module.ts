@@ -23,6 +23,6 @@ import { PersonTypeOrmRepository } from '../infrastructure/persistence/typeorm/r
     GetPersonByIdUseCase,
     ListPersonsUseCase,
   ],
-  exports: [PERSON_REPOSITORY, PersonService],
+  exports: [PERSON_REPOSITORY, PersonService, CreatePersonUseCase],
 })
 export class PersonModule {}

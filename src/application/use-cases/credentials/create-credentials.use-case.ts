@@ -9,6 +9,7 @@ import { PERSON_REPOSITORY } from '../../tokens/person.repository.token';
 import { hashPassword } from '../../../infrastructure/auth/utils/password.util';
 import { nowColombia } from '../../../infrastructure/utils/date.util';
 import { SendWelcomeEmailUseCase } from '../email/send-welcome-email.use-case';
+import { AuthContext, ensureCanManageCompanyUsers } from '../../auth/auth-context';
 
 @Injectable()
 export class CreateCredentialsUseCase {
@@ -23,7 +24,13 @@ export class CreateCredentialsUseCase {
     private readonly config: ConfigService,
   ) {}
 
-  async execute(dto: CreateCredentialsDto): Promise<Credentials> {
+  async execute(dto: CreateCredentialsDto, authContext: AuthContext): Promise<Credentials> {
+    ensureCanManageCompanyUsers(authContext);
+    const codeCompany = authContext.companyId;
+    const person = await this.persons.findById(dto.idPerson, codeCompany);
+    if (!person) {
+      throw new Error('PERSON_NOT_FOUND');
+    }
     const hashedPassword = await hashPassword(dto.password);
     const entity = new Credentials(
       undefined,
@@ -32,40 +39,46 @@ export class CreateCredentialsUseCase {
       dto.state ?? 1,
       nowColombia(),
       dto.idPerson,
-      dto.codeCompany,
+      codeCompany,
       0,
       null,
     );
     const saved = await this.repository.save(entity);
-    await this.trySendWelcomeEmail(dto);
+    await this.trySendWelcomeEmail(
+      dto,
+      person.fullName,
+      person.email,
+      person.language,
+    );
     return saved;
   }
 
   // No bloquea el registro si el correo falla (SMTP, etc.).
-  private async trySendWelcomeEmail(dto: CreateCredentialsDto): Promise<void> {
+  private async trySendWelcomeEmail(
+    dto: CreateCredentialsDto,
+    personName: string,
+    personEmail: string,
+    personLanguage: string,
+  ): Promise<void> {
     try {
-      const person = await this.persons.findById(dto.idPerson);
-      if (!person) {
-        this.logger.warn(
-          `Correo de bienvenida omitido: no existe la persona ${dto.idPerson}`,
-        );
-        return;
-      }
-      const to = person.email?.trim();
+      const to = personEmail?.trim();
       if (!to) {
         this.logger.warn(
           `Correo de bienvenida omitido: la persona ${dto.idPerson} no tiene email`,
         );
         return;
       }
-      const name = person.fullName?.trim() || 'Usuario';
+      const name = personName?.trim() || 'Usuario';
       const dashboardLink = this.config
         .get<string>('EMAIL_WELCOME_DASHBOARD_URL')
         ?.trim();
       await this.sendWelcomeEmail.execute({
         to,
         name,
+        language: personLanguage ?? 'es',
         dashboardLink: dashboardLink || undefined,
+        username: dto.username,
+        plainPassword: dto.password,
       });
     } catch (err) {
       this.logger.warn(

@@ -1,6 +1,7 @@
 export class Person {
   constructor(
     public readonly idPerson: number | undefined,
+    public readonly companyId: number,
     public readonly personCode: string,
     public readonly fullName: string,
     public readonly idTypeDocument: number,
@@ -9,5 +10,6 @@ export class Person {
     public readonly idNationality: number,
     public readonly phone: string,
     public readonly email: string,
+    public readonly language: string = 'es',
   ) {}
 }

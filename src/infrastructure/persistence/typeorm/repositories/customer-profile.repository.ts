@@ -45,6 +45,19 @@ export class CustomerProfileTypeOrmRepository implements ICustomerProfileReposit
     return orm ? CustomerProfileMapper.toDomain(orm) : null;
   }
 
+  async findByIdForCompany(
+    idCustomerProfile: number,
+    codeCompany: number,
+  ): Promise<CustomerProfile | null> {
+    const orm = await this.repository
+      .createQueryBuilder('cp')
+      .innerJoin('cp.personRole', 'pr')
+      .where('cp.idCustomerProfile = :id', { id: idCustomerProfile })
+      .andWhere('pr.codeCompany = :codeCompany', { codeCompany })
+      .getOne();
+    return orm ? CustomerProfileMapper.toDomain(orm) : null;
+  }
+
   // Find a customer profile by code.
   async findByCodeCustomer(codeCustomer: string): Promise<CustomerProfile | null> {
     const orm = await this.repository.findOne({
@@ -105,7 +118,7 @@ export class CustomerProfileTypeOrmRepository implements ICustomerProfileReposit
   async findPaginated(
     query: CustomerProfileListQuery,
   ): Promise<CustomerProfilePaginatedResult<CustomerProfile>> {
-    const { page, pageSize, search } = query;
+    const { page, pageSize, search, codeCompany } = query;
     const skip = (page - 1) * pageSize;
 
     const qb = this.repository
@@ -116,6 +129,13 @@ export class CustomerProfileTypeOrmRepository implements ICustomerProfileReposit
         'cp.codeCustomer',
         'cp.createdAt',
       ]);
+
+    if (codeCompany !== undefined) {
+      qb.innerJoin('cp.personRole', 'pr').andWhere(
+        'pr.codeCompany = :codeCompany',
+        { codeCompany },
+      );
+    }
 
     if (search && search.trim() !== '') {
       const term = `%${search.trim()}%`;

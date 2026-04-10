@@ -4,6 +4,7 @@ import {
   PersonWithRelations,
 } from '../../../domain/repositories/person.repository';
 import { PERSON_REPOSITORY } from '../../tokens/person.repository.token';
+import { AuthContext, ensureCanManageCompanyUsers } from '../../auth/auth-context';
 
 @Injectable()
 export class GetPersonByIdUseCase {
@@ -12,7 +13,14 @@ export class GetPersonByIdUseCase {
     private readonly repository: IPersonRepository,
   ) {}
 
-  async execute(idPerson: number): Promise<PersonWithRelations | null> {
-    return this.repository.findByIdWithRelations(idPerson);
+  async execute(
+    idPerson: number,
+    authContext?: AuthContext,
+  ): Promise<PersonWithRelations | null> {
+    if (authContext) {
+      ensureCanManageCompanyUsers(authContext);
+    }
+    const scopedCompanyId = authContext ? authContext.companyId : undefined;
+    return this.repository.findByIdWithRelations(idPerson, scopedCompanyId);
   }
 }

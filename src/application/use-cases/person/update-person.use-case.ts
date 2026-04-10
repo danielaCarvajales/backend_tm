@@ -3,6 +3,7 @@ import { Person } from '../../../domain/entities/person.entity';
 import { IPersonRepository } from '../../../domain/repositories/person.repository';
 import { UpdatePersonDto } from '../../dto/person/update-person.dto';
 import { PERSON_REPOSITORY } from '../../tokens/person.repository.token';
+import { AuthContext, ensureCanManageCompanyUsers } from '../../auth/auth-context';
 
 @Injectable()
 export class UpdatePersonUseCase {
@@ -11,13 +12,22 @@ export class UpdatePersonUseCase {
     private readonly repository: IPersonRepository,
   ) {}
 
-  async execute(idPerson: number, dto: UpdatePersonDto): Promise<Person> {
-    const existing = await this.repository.findById(idPerson);
+  async execute(
+    idPerson: number,
+    dto: UpdatePersonDto,
+    authContext?: AuthContext,
+  ): Promise<Person> {
+    if (authContext) {
+      ensureCanManageCompanyUsers(authContext);
+    }
+    const scopedCompanyId = authContext ? authContext.companyId : undefined;
+    const existing = await this.repository.findById(idPerson, scopedCompanyId);
     if (!existing) {
       throw new Error('PERSON_NOT_FOUND');
     }
     const updated = new Person(
       idPerson,
+      existing.companyId,
       existing.personCode,
       dto.fullName ?? existing.fullName,
       dto.idTypeDocument ?? existing.idTypeDocument,
@@ -26,6 +36,7 @@ export class UpdatePersonUseCase {
       dto.idNationality ?? existing.idNationality,
       dto.phone ?? existing.phone,
       dto.email ?? existing.email,
+      dto.language ?? existing.language,
     );
     return this.repository.update(updated);
   }

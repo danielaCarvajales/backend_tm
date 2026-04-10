@@ -26,7 +26,7 @@ export class PaymentPlanController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async create(@Body() dto: CreatePaymentPlanDto) {
     const entity = await this.createUseCase.execute(dto);
     return {
@@ -42,7 +42,7 @@ export class PaymentPlanController {
 
   @Put(':id')
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async update(
     @Param('id', ParseIntPipe) idPaymentPlan: number,
     @Body() dto: UpdatePaymentPlanDto,
@@ -71,7 +71,7 @@ export class PaymentPlanController {
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async delete(@Param('id', ParseIntPipe) idPaymentPlan: number) {
     try {
       await this.deleteUseCase.execute(idPaymentPlan);

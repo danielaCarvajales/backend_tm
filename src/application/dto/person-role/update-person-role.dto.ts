@@ -15,11 +15,6 @@ export class UpdatePersonRoleDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  codeCompany?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
   idState?: number;
 
   @IsOptional()

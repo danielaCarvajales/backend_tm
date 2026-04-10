@@ -5,13 +5,15 @@ import type { CaseRecordWithRelations } from '../../../../domain/repositories/ca
 function stubCase(
   idCase: number,
   holder: number,
+  codeCompany = 1,
 ): CaseRecordWithRelations {
   return {
     idCase,
     caseCode: `CAS${idCase}`,
     holder,
     agent: null,
-    codeCompany: 1,
+    codeCompany,
+    amount: '0.00',
     idStateCase: 1,
     createdAt: new Date(),
     closingDate: null,
@@ -21,6 +23,7 @@ function stubCase(
     stateCase: {} as CaseRecordWithRelations['stateCase'],
     services: [],
     persons: [],
+    contracts: [],
   };
 }
 
@@ -45,7 +48,7 @@ describe('GetCaseRecordByIdUseCase', () => {
   it('devuelve null si el repositorio no encuentra el caso', async () => {
     repository.findByIdWithRelations.mockResolvedValue(null);
 
-    const result = await useCase.execute(99, 100, 'cliente');
+    const result = await useCase.execute(99, 100, 'cliente', 10);
 
     expect(result).toBeNull();
     expect(repository.findByIdWithRelations).toHaveBeenCalledWith(99);
@@ -55,7 +58,7 @@ describe('GetCaseRecordByIdUseCase', () => {
     const record = stubCase(1, 200);
     repository.findByIdWithRelations.mockResolvedValue(record);
 
-    const result = await useCase.execute(1, 100, 'cliente');
+    const result = await useCase.execute(1, 100, 'cliente', 10);
 
     expect(result).toBeNull();
   });
@@ -64,35 +67,36 @@ describe('GetCaseRecordByIdUseCase', () => {
     const record = stubCase(1, 100);
     repository.findByIdWithRelations.mockResolvedValue(record);
 
-    const result = await useCase.execute(1, 100, 'cliente');
+    const result = await useCase.execute(1, 100, 'cliente', 10);
 
     expect(result).toEqual(record);
   });
 
-  it('asesor: devuelve el caso aunque userId no sea el titular', async () => {
-    const record = stubCase(1, 200);
+  it('asesor: devuelve el caso si la compañía del visor coincide', async () => {
+    const record = stubCase(1, 200, 10);
     repository.findByIdWithRelations.mockResolvedValue(record);
 
-    const result = await useCase.execute(1, 999, 'asesor');
+    const result = await useCase.execute(1, 999, 'asesor', 10);
 
     expect(result).toEqual(record);
   });
 
-  it('administrador: devuelve el caso aunque userId no sea el titular', async () => {
-    const record = stubCase(1, 200);
+  it('asesor: devuelve null si el caso es de otra compañía', async () => {
+    const record = stubCase(1, 200, 99);
     repository.findByIdWithRelations.mockResolvedValue(record);
 
-    const result = await useCase.execute(1, 999, 'administrador');
+    const result = await useCase.execute(1, 999, 'asesor', 10);
 
-    expect(result).toEqual(record);
+    expect(result).toBeNull();
   });
 
-  it('rol vacío o no-cliente: no aplica filtro por titular', async () => {
-    const record = stubCase(1, 200);
+  it('administrador: devuelve el caso si la compañía coincide', async () => {
+    const record = stubCase(1, 200, 10);
     repository.findByIdWithRelations.mockResolvedValue(record);
 
-    const result = await useCase.execute(1, 1, '');
+    const result = await useCase.execute(1, 999, 'administrador', 10);
 
     expect(result).toEqual(record);
   });
+
 });

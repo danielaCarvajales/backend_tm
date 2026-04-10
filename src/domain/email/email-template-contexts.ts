@@ -1,6 +1,4 @@
-/**
- * Layout base (layout.hbs). All user-visible copy can be passed from config or use cases.
- */
+/** Contextos mínimos para plantillas; textos visibles salen de i18n (email.*). */
 export interface LayoutEmailTemplateContext {
   title: string;
   name: string;
@@ -10,43 +8,26 @@ export interface LayoutEmailTemplateContext {
   status?: string;
 }
 
-export interface RecoveryEmailBodyContext {
+export interface RecoveryEmailTemplateContext {
   name: string;
-}
-
-export type RecoveryEmailTemplateContext = RecoveryEmailBodyContext & {
   resetLink: string;
-  title: string;
-  buttonText: string;
-};
-
-export interface WelcomeEmailBodyContext {
-  name: string;
 }
 
-export type WelcomeEmailTemplateContext = WelcomeEmailBodyContext & {
-  title: string;
+export interface WelcomeEmailTemplateContext {
+  name: string;
   dashboardLink?: string;
-  buttonText?: string;
-};
+  username: string;
+  plainPassword: string;
+}
 
-export interface CaseCreatedEmailBodyContext {
+export interface CaseCreatedEmailTemplateContext {
   name: string;
   caseCode: string;
   caseDetailLink?: string;
 }
 
-export type CaseCreatedEmailTemplateContext = CaseCreatedEmailBodyContext & {
-  title: string;
-  buttonText?: string;
-};
-
-export interface OtpEmailBodyContext {
+export interface OtpEmailTemplateContext {
   name: string;
   otpCode: string;
   expiresMinutes: number;
 }
-
-export type OtpEmailTemplateContext = OtpEmailBodyContext & {
-  title: string;
-};

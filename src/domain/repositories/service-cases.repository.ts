@@ -1,4 +1,5 @@
 import { ServiceCases } from '../entities/service-cases.entity';
+import type { CaseRecordContractItem } from './case-record.repository';
 
 export interface ServiceCasesWithRelations {
   idServiceCases: number;
@@ -15,6 +16,7 @@ export interface ServiceCasesWithRelations {
     idCase: number;
     caseCode: string;
   };
+  contracts: CaseRecordContractItem[];
 }
 
 export interface ServiceCasesListQuery {

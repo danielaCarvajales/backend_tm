@@ -43,11 +43,6 @@ export class UpdateCredentialsDto {
   @IsOptional()
   @Type(() => Number)
   @IsInt()
-  codeCompany?: number;
-
-  @IsOptional()
-  @Type(() => Number)
-  @IsInt()
   failedAttempts?: number;
 
   @IsOptional()

@@ -24,7 +24,7 @@ export class ServiceCompanyController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async create(
     @Body() dto: CreateServiceCompanyDto,
     @CurrentUser() user: JwtPayload,
@@ -38,7 +38,7 @@ export class ServiceCompanyController {
 
   @Put(':id')
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async update(
     @Param('id', ParseIntPipe) idService: number,
     @Body() dto: UpdateServiceCompanyDto,
@@ -67,7 +67,7 @@ export class ServiceCompanyController {
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles('administrador')
+  @Roles('administrador', 'asesor')
   async delete(
     @Param('id', ParseIntPipe) idService: number,
     @CurrentUser() user: JwtPayload,

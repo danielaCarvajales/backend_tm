@@ -1,4 +1,16 @@
-import {Body, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put, Query} from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { CreatePersonRoleDto } from '../../application/dto/person-role/create-person-role.dto';
 import { QueryPersonRoleDto } from '../../application/dto/person-role/query-person-role.dto';
 import { UpdatePersonRoleDto } from '../../application/dto/person-role/update-person-role.dto';
@@ -7,7 +19,8 @@ import { DeletePersonRoleUseCase } from '../../application/use-cases/person-role
 import { GetPersonRoleByIdUseCase } from '../../application/use-cases/person-role/get-person-role-by-id.use-case';
 import { ListPersonRolesUseCase } from '../../application/use-cases/person-role/list-person-roles.use-case';
 import { UpdatePersonRoleUseCase } from '../../application/use-cases/person-role/update-person-role.use-case';
-import { Public } from 'src/infrastructure/auth/decorators/public.decorator';
+import { AuthContextUser } from '../../infrastructure/auth/decorators/auth-context.decorator';
+import { AuthContext } from '../../application/auth/auth-context';
 
 const toResponse = (entity: {
   idPersonRole?: number;
@@ -41,28 +54,63 @@ export class PersonRoleController {
 
 
   @Post()
-  @Public()
-  async create(@Body() dto: CreatePersonRoleDto) {
-    const entity = await this.createUseCase.execute(dto);
-    return {
-      data: toResponse({ ...entity, roleName: undefined }),
-      message: 'Rol asignado correctamente a la persona',
-    };
+  async create(
+    @Body() dto: CreatePersonRoleDto,
+    @AuthContextUser() authContext: AuthContext,
+  ) {
+    try {
+      const entity = await this.createUseCase.execute(dto, authContext);
+      return {
+        data: toResponse({ ...entity, roleName: undefined }),
+        message: 'Rol asignado correctamente a la persona',
+      };
+    } catch (err) {
+      if (err instanceof Error && err.message === 'FORBIDDEN_ROLE_SCOPE') {
+        throw new ForbiddenException(
+          'No tiene permisos para asignar este rol',
+        );
+      }
+      if (err instanceof Error && err.message === 'ROLE_NOT_FOUND') {
+        throw new NotFoundException('Rol no encontrado');
+      }
+      if (err instanceof Error && err.message === 'PERSON_NOT_FOUND') {
+        throw new NotFoundException('Persona no encontrada');
+      }
+      if (
+        err instanceof Error &&
+        err.message === 'SUPER_ADMIN_ASSIGNMENT_BLOCKED'
+      ) {
+        throw new ForbiddenException(
+          'La asignación de rol super_admin no está permitida por API',
+        );
+      }
+      if (err instanceof Error && err.message === 'FORBIDDEN_COMPANY_SCOPE') {
+        throw new ForbiddenException(
+          'No tiene permisos sobre la compañía objetivo',
+        );
+      }
+      throw err;
+    }
   }
 
   @Put(':id')
-  @Public()
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() dto: UpdatePersonRoleDto,
+    @AuthContextUser() authContext: AuthContext,
   ) {
     try {
-      const entity = await this.updateUseCase.execute(id, dto);
+      const entity = await this.updateUseCase.execute(id, dto, authContext);
       return {
         data: toResponse({ ...entity, roleName: undefined }),
         message: 'Asignación de rol actualizada correctamente',
       };
     } catch (err) {
+      if (err instanceof Error && err.message === 'FORBIDDEN_COMPANY_SCOPE') {
+        throw new ForbiddenException(
+          'No tiene permisos sobre la compañía objetivo',
+        );
+      }
       if (err instanceof Error && err.message === 'PERSON_ROLE_NOT_FOUND') {
         throw new NotFoundException('Asignación de rol no encontrada');
       }
@@ -71,13 +119,21 @@ export class PersonRoleController {
   }
 
   @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) id: number) {
+  async delete(
+    @Param('id', ParseIntPipe) id: number,
+    @AuthContextUser() authContext: AuthContext,
+  ) {
     try {
-      await this.deleteUseCase.execute(id);
+      await this.deleteUseCase.execute(id, authContext);
       return {
         message: 'Asignación de rol eliminada correctamente',
       };
     } catch (err) {
+      if (err instanceof Error && err.message === 'FORBIDDEN_COMPANY_SCOPE') {
+        throw new ForbiddenException(
+          'No tiene permisos sobre la compañía objetivo',
+        );
+      }
       if (err instanceof Error && err.message === 'PERSON_ROLE_NOT_FOUND') {
         throw new NotFoundException('Asignación de rol no encontrada');
       }
@@ -86,31 +142,55 @@ export class PersonRoleController {
   }
 
   @Get()
-  async list(@Query() query: QueryPersonRoleDto) {
-    const result = await this.listUseCase.execute(query);
-    return {
-      data: result.data.map((e) => toResponse(e)),
-      message: 'Asignaciones de rol obtenidas exitosamente',
-      pagination: {
-        totalItems: result.totalItems,
-        totalPages: result.totalPages,
-        currentPage: result.currentPage,
-        pageSize: result.pageSize,
-        hasNextPage: result.hasNextPage,
-        hasPreviousPage: result.hasPreviousPage,
-      },
-    };
+  async list(
+    @Query() query: QueryPersonRoleDto,
+    @AuthContextUser() authContext: AuthContext,
+  ) {
+    try {
+      const result = await this.listUseCase.execute(query, authContext);
+      return {
+        data: result.data.map((e) => toResponse(e)),
+        message: 'Asignaciones de rol obtenidas exitosamente',
+        pagination: {
+          totalItems: result.totalItems,
+          totalPages: result.totalPages,
+          currentPage: result.currentPage,
+          pageSize: result.pageSize,
+          hasNextPage: result.hasNextPage,
+          hasPreviousPage: result.hasPreviousPage,
+        },
+      };
+    } catch (err) {
+      if (err instanceof Error && err.message === 'FORBIDDEN_COMPANY_SCOPE') {
+        throw new ForbiddenException(
+          'No tiene permisos sobre la compañía objetivo',
+        );
+      }
+      throw err;
+    }
   }
 
   @Get(':id')
-  async getById(@Param('id', ParseIntPipe) id: number) {
-    const entity = await this.getByIdUseCase.execute(id);
-    if (!entity) {
-      throw new NotFoundException('Asignación de rol no encontrada');
+  async getById(
+    @Param('id', ParseIntPipe) id: number,
+    @AuthContextUser() authContext: AuthContext,
+  ) {
+    try {
+      const entity = await this.getByIdUseCase.execute(id, authContext);
+      if (!entity) {
+        throw new NotFoundException('Asignación de rol no encontrada');
+      }
+      return {
+        data: toResponse({ ...entity, roleName: undefined }),
+        message: 'Asignación de rol encontrada correctamente',
+      };
+    } catch (err) {
+      if (err instanceof Error && err.message === 'FORBIDDEN_COMPANY_SCOPE') {
+        throw new ForbiddenException(
+          'No tiene permisos sobre la compañía objetivo',
+        );
+      }
+      throw err;
     }
-    return {
-      data: toResponse({ ...entity, roleName: undefined }),
-      message: 'Asignación de rol encontrada correctamente',
-    };
   }
 }

@@ -29,6 +29,9 @@ config({ path: '.env' });
 
 const ROLES = ['administrador', 'asesor', 'cliente'] as const;
 
+/** Catálogo `states` (compañías, credenciales, asignación de roles, etc.). `Activo` suele ser id_state = 1. */
+const ENTITY_STATES = ['Activo', 'Inactivo'] as const;
+
 const STATE_CASES = [
   'RADICADO',
   'EVIDENCIA_SOLICITADA',
@@ -86,12 +89,27 @@ async function runSeed() {
   });
 
   await dataSource.initialize();
+  const stateRepo = dataSource.getRepository(State);
   const roleRepo = dataSource.getRepository(Role);
   const personRoleRepo = dataSource.getRepository(PersonRole);
   const stateCaseRepo = dataSource.getRepository(StateCase);
   const familyRelationshipRepo = dataSource.getRepository(FamilyRelationship);
 
   try {
+    for (const stateName of ENTITY_STATES) {
+      const existing = await stateRepo.findOne({
+        where: { nameState: stateName },
+      });
+      if (!existing) {
+        await stateRepo.save({ nameState: stateName });
+        console.log(`✓ Estado de entidad creado: ${stateName}`);
+      } else {
+        console.log(
+          `- Estado de entidad ya existe: ${stateName} (id: ${existing.idState})`,
+        );
+      }
+    }
+
     for (const stateCaseName of STATE_CASES) {
       const existing = await stateCaseRepo.findOne({
         where: { nameState: stateCaseName },

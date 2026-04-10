@@ -24,5 +24,6 @@ import { PersonModule } from './person.module';
     GetCredentialsByIdUseCase,
     ListCredentialsUseCase,
   ],
+  exports: [CreateCredentialsUseCase],
 })
 export class CredentialsModule {}

@@ -1,6 +1,7 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { CustomerProfile } from '../../../domain/entities/customer-profile.entity';
 import { ICustomerProfileRepository } from '../../../domain/repositories/customer-profile.repository';
+import { AuthContext } from '../../auth/auth-context';
 import { CUSTOMER_PROFILE_REPOSITORY } from '../../tokens/customer-profile.repository.token';
 
 @Injectable()
@@ -10,7 +11,13 @@ export class GetCustomerProfileByIdUseCase {
     private readonly repository: ICustomerProfileRepository,
   ) {}
 
-  async execute(idCustomerProfile: number): Promise<CustomerProfile | null> {
-    return this.repository.findById(idCustomerProfile);
+  async execute(
+    idCustomerProfile: number,
+    authContext: AuthContext,
+  ): Promise<CustomerProfile | null> {
+    return this.repository.findByIdForCompany(
+      idCustomerProfile,
+      authContext.companyId,
+    );
   }
 }

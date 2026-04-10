@@ -1,9 +1,6 @@
 import type { ConfigService } from '@nestjs/config';
 
-/**
- * 1) EMAIL_LOGO_URL — URL completa.
- * 2) DO_SPACES_PUBLIC_BASE_URL + EMAIL_LOGO_SPACES_KEY (por defecto assets/logotm.png).
- */
+
 export function resolveEmailLogoUrl(config: ConfigService): string {
   const explicit = config.get<string>('EMAIL_LOGO_URL')?.trim();
   if (explicit) {

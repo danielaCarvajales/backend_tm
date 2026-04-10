@@ -1,7 +1,16 @@
-import { IsDateString, IsEmail, IsInt, IsOptional, IsString, MaxLength } from 'class-validator';
+import {
+  IsDateString,
+  IsEmail,
+  IsInt,
+  IsOptional,
+  IsString,
+  Matches,
+  MaxLength,
+} from 'class-validator';
 import { Type } from 'class-transformer';
 
 export class UpdatePersonDto {
+  private static readonly LANGUAGE_REGEX = /^[a-z]{2}$/;
 
   @IsOptional()
   @IsString()
@@ -36,4 +45,11 @@ export class UpdatePersonDto {
   @IsEmail()
   @MaxLength(250)
   email?: string;
+
+  @IsOptional()
+  @IsString()
+  @Matches(UpdatePersonDto.LANGUAGE_REGEX, {
+    message: 'El idioma debe tener formato ISO 639-1 (ej: es, en, pt)',
+  })
+  language?: string;
 }

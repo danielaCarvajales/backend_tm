@@ -1,4 +1,17 @@
-import {Body,ConflictException,Controller,Delete,Get,NotFoundException,Param,ParseIntPipe,Post,Put,Query} from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Delete,
+  ForbiddenException,
+  Get,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+} from '@nestjs/common';
 import { CreatePersonDto } from '../../application/dto/person/create-person.dto';
 import { QueryPersonDto } from '../../application/dto/person/query-person.dto';
 import { UpdatePersonDto } from '../../application/dto/person/update-person.dto';
@@ -7,7 +20,8 @@ import { DeletePersonUseCase } from '../../application/use-cases/person/delete-p
 import { GetPersonByIdUseCase } from '../../application/use-cases/person/get-person-by-id.use-case';
 import { ListPersonsUseCase } from '../../application/use-cases/person/list-persons.use-case';
 import { UpdatePersonUseCase } from '../../application/use-cases/person/update-person.use-case';
-import { Public } from 'src/infrastructure/auth/decorators/public.decorator';
+import { AuthContextUser } from '../../infrastructure/auth/decorators/auth-context.decorator';
+import { AuthContext } from '../../application/auth/auth-context';
 
 @Controller('persons')
 export class PersonController {
@@ -20,10 +34,12 @@ export class PersonController {
   ) {}
 
   @Post()
-  @Public()
-  async create(@Body() dto: CreatePersonDto) {
+  async create(
+    @Body() dto: CreatePersonDto,
+    @AuthContextUser() authContext: AuthContext,
+  ) {
     try {
-      const entity = await this.createUseCase.execute(dto);
+      const entity = await this.createUseCase.execute(dto, authContext);
       return {
         data: entity,
         message: 'Persona creada exitosamente',
@@ -31,6 +47,16 @@ export class PersonController {
     } catch (err) {
       if (err instanceof Error && err.message === 'PERSON_CODE_GENERATION_FAILED') {
         throw new ConflictException('No se pudo generar un código de persona único. Intente nuevamente.');
+      }
+      if (err instanceof Error && err.message === 'COMPANY_ID_REQUIRED') {
+        throw new ConflictException(
+          'Debe indicar una compañía para crear la persona',
+        );
+      }
+      if (err instanceof Error && err.message === 'FORBIDDEN_ROLE_SCOPE') {
+        throw new ForbiddenException(
+          'No tiene permisos para crear personas',
+        );
       }
       throw err;
     }
@@ -40,9 +66,10 @@ export class PersonController {
   async update(
     @Param('id', ParseIntPipe) idPerson: number,
     @Body() dto: UpdatePersonDto,
+    @AuthContextUser() authContext: AuthContext,
   ) {
     try {
-      const entity = await this.updateUseCase.execute(idPerson, dto);
+      const entity = await this.updateUseCase.execute(idPerson, dto, authContext);
       return {
         data: entity,
         message: 'Persona actualizada exitosamente',
@@ -51,14 +78,20 @@ export class PersonController {
       if (err instanceof Error && err.message === 'PERSON_NOT_FOUND') {
         throw new NotFoundException('Persona no encontrada');
       }
+      if (err instanceof Error && err.message === 'FORBIDDEN_ROLE_SCOPE') {
+        throw new ForbiddenException('No tiene permisos para actualizar personas');
+      }
       throw err;
     }
   }
 
   @Delete(':id')
-  async delete(@Param('id', ParseIntPipe) idPerson: number) {
+  async delete(
+    @Param('id', ParseIntPipe) idPerson: number,
+    @AuthContextUser() authContext: AuthContext,
+  ) {
     try {
-      await this.deleteUseCase.execute(idPerson);
+      await this.deleteUseCase.execute(idPerson, authContext);
       return {
         message: 'Persona eliminada exitosamente',
       };
@@ -66,48 +99,73 @@ export class PersonController {
       if (err instanceof Error && err.message === 'PERSON_NOT_FOUND') {
         throw new NotFoundException('Persona no encontrada');
       }
+      if (err instanceof Error && err.message === 'FORBIDDEN_ROLE_SCOPE') {
+        throw new ForbiddenException('No tiene permisos para eliminar personas');
+      }
       throw err;
     }
   }
-@Get()
-@Public()
-  async list(@Query() query: QueryPersonDto) {
-    const result = await this.listUseCase.execute(query);
-    return {
-      message: 'Personas obtenidas exitosamente',
-      data: result.data.map((entity) => ({
-        idPerson: entity.idPerson,
-        personCode: entity.personCode,
-        fullName: entity.fullName,
-        idTypeDocument: entity.idTypeDocument,
-        documentNumber: entity.documentNumber,
-        birthdate: entity.birthdate,
-        idNationality: entity.idNationality,
-        phone: entity.phone,
-        email: entity.email,
-        typeDocument: entity.typeDocument,
-        nationality: entity.nationality,
-      })),
-      pagination: {
-        totalItems: result.totalItems,
-        totalPages: result.totalPages,
-        currentPage: result.currentPage,
-        pageSize: result.pageSize,
-        hasNextPage: result.hasNextPage,
-        hasPreviousPage: result.hasPreviousPage,
-      },
-    };
+
+  @Get()
+  async list(
+    @Query() query: QueryPersonDto,
+    @AuthContextUser() authContext: AuthContext,
+  ) {
+    try {
+      const result = await this.listUseCase.execute(query, authContext);
+      return {
+        message: 'Personas obtenidas exitosamente',
+        data: result.data.map((entity) => ({
+          idPerson: entity.idPerson,
+          companyId: entity.companyId,
+          personCode: entity.personCode,
+          fullName: entity.fullName,
+          idTypeDocument: entity.idTypeDocument,
+          documentNumber: entity.documentNumber,
+          birthdate: entity.birthdate,
+          idNationality: entity.idNationality,
+          phone: entity.phone,
+          email: entity.email,
+          language: entity.language,
+          typeDocument: entity.typeDocument,
+          nationality: entity.nationality,
+        })),
+        pagination: {
+          totalItems: result.totalItems,
+          totalPages: result.totalPages,
+          currentPage: result.currentPage,
+          pageSize: result.pageSize,
+          hasNextPage: result.hasNextPage,
+          hasPreviousPage: result.hasPreviousPage,
+        },
+      };
+    } catch (err) {
+      if (err instanceof Error && err.message === 'FORBIDDEN_ROLE_SCOPE') {
+        throw new ForbiddenException('No tiene permisos para listar personas');
+      }
+      throw err;
+    }
   }
 
   @Get(':id')
-  async getById(@Param('id', ParseIntPipe) idPerson: number) {
-    const entity = await this.getByIdUseCase.execute(idPerson);
-    if (!entity) {
-      throw new NotFoundException('Persona no encontrada');
+  async getById(
+    @Param('id', ParseIntPipe) idPerson: number,
+    @AuthContextUser() authContext: AuthContext,
+  ) {
+    try {
+      const entity = await this.getByIdUseCase.execute(idPerson, authContext);
+      if (!entity) {
+        throw new NotFoundException('Persona no encontrada');
+      }
+      return {
+        data: entity,
+        message: 'Persona encontrada exitosamente',
+      };
+    } catch (err) {
+      if (err instanceof Error && err.message === 'FORBIDDEN_ROLE_SCOPE') {
+        throw new ForbiddenException('No tiene permisos para consultar personas');
+      }
+      throw err;
     }
-    return {
-      data: entity,
-      message: 'Persona encontrada exitosamente',
-    };
   }
 }

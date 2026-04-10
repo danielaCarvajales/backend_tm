@@ -1,0 +1,38 @@
+{
+  "common": {
+    "greetingPrefix": "Olá",
+    "brandAlt": "TM"
+  },
+  "footer": {
+    "linkInstitutionTitle": "Instituição",
+    "linkWebTitle": "Site",
+    "linkPortalTitle": "Portal",
+    "rightsLine": "© {copyrightYear} {companyName}. {rightsSuffix}",
+    "rightsSuffix": "TODOS OS DIREITOS RESERVADOS."
+  },
+  "welcome": {
+    "subject": "Bem-vindo à TM",
+    "heading": "Bem-vindo à TM",
+    "buttonDashboard": "Ir ao painel",
+    "bodyWithDashboard": "<p>Bem-vindo à <strong>TM</strong>!</p><p>Temos o prazer de informar que o seu registo foi concluído com sucesso.A partir de agora, pode aceder à plataforma utilizando as suas credenciais.</p><p><strong>Utilizador:</strong> {username}<br/><strong>Palavra-passe:</strong> {password}</p><p>Utilize estes dados para iniciar sessão. Por segurança, recomendamos que <strong>altere a palavra-passe</strong> após o primeiro acesso. Guarde estes dados em local seguro e não os partilhe com terceiros.</p><p>Na sua conta poderá consultar os seus dados pessoais, gerir informações e aceder a todos os serviços disponíveis para si.</p>",
+    "bodyWithoutDashboard": "<p>Bem-vindo à <strong>TM</strong>!</p><p>Temos o prazer de informar que o seu registo foi concluído com sucesso.</p><p><strong>Utilizador:</strong> {username}<br/><strong>Palavra-passe:</strong> {password}</p><p>Utilize estes dados para iniciar sessão. Por segurança, recomendamos que <strong>altere a palavra-passe</strong> após o primeiro acesso. Recomendamos também que os guarde em local seguro e não os partilhe com terceiros.</p><p>Obrigado pela sua confiança!</p>"
+  },
+  "recovery": {
+    "subject": "Recuperação de palavra-passe — TM",
+    "heading": "Recuperação de palavra-passe",
+    "buttonReset": "Redefinir palavra-passe",
+    "bodyHtml": "<p>Recebemos um pedido para <strong>redefinir a palavra-passe</strong> da sua conta TM.</p><p>Se foi você, utilize o botão deste e-mail para continuar. A ligação expira de acordo com a política de segurança aplicável.</p><p>Se <strong>não</strong> solicitou esta alteração, pode ignorar esta mensagem; a palavra-passe atual continuará válida.</p>"
+  },
+  "caseCreated": {
+    "subject": "Caso {caseCode} criado — TM",
+    "heading": "Novo caso registado",
+    "buttonViewCase": "Ver caso",
+    "bodyWithLink": "<p>Foi <strong>registado um novo caso com o código {caseCode}</strong> no sistema.</p><p>A partir de agora, pode gerir integralmente o seu caso, incluindo relacionar pessoas, administrar informações, anexar e consultar documentos, bem como acompanhar o trâmite.</p><p>Obrigado por confiar na TM para a gestão do seu processo.</p>",
+    "bodyWithoutLink": "<p>Foi <strong>registado um novo caso com o código {caseCode}</strong> no sistema.</p><p>Obrigado por confiar na TM para a gestão do seu processo.</p>"
+  },
+  "otp": {
+    "subject": "O seu código de verificação — TM",
+    "heading": "Código de verificação",
+    "bodyHtml": "<p style=\"margin:0 0 12px;font-family:Georgia,Times New Roman,serif;font-weight:400;\">O seu código de verificação de palavra-passe é:</p><p style=\"margin:16px 0;font-family:Georgia,Times New Roman,serif;font-size:30px;font-weight:400;color:#0d47a1;text-align:center;\">{otpCode}</p><p style=\"margin:0 0 8px;font-family:Georgia,Times New Roman,serif;font-size:14px;font-weight:400;\">Este código é válido por <strong>{expiresMinutes} minutos</strong>. Por motivos de segurança, não o partilhe com terceiros.</p>"
+  }
+}

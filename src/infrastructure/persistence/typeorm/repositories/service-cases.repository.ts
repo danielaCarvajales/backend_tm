@@ -9,6 +9,7 @@ import {
 } from '../../../../domain/repositories/service-cases.repository';
 import { ServiceCases as ServiceCasesOrm } from '../entities/service-cases/service-cases';
 import { ServiceCasesMapper } from '../mappers/service-cases.mapper';
+import { mapCaseRecordContracts } from '../mappers/contract-embed.mapper';
 
 @Injectable()
 export class ServiceCasesTypeOrmRepository implements IServiceCasesRepository {
@@ -71,7 +72,7 @@ export class ServiceCasesTypeOrmRepository implements IServiceCasesRepository {
   ): Promise<ServiceCasesWithRelations | null> {
     const orm = await this.repository.findOne({
       where: { idCase, idServiceCases },
-      relations: ['serviceCompany', 'caseRecord'],
+      relations: ['serviceCompany', 'caseRecord', 'caseRecord.contracts'],
     });
     return orm ? this.mapToWithRelations(orm) : null;
   }
@@ -120,7 +121,7 @@ export class ServiceCasesTypeOrmRepository implements IServiceCasesRepository {
 
     const [items, totalItems] = await this.repository.findAndCount({
       where: { idCase },
-      relations: ['serviceCompany', 'caseRecord'],
+      relations: ['serviceCompany', 'caseRecord', 'caseRecord.contracts'],
       order: { createdAt: 'DESC' },
       skip,
       take: pageSize,
@@ -166,6 +167,7 @@ export class ServiceCasesTypeOrmRepository implements IServiceCasesRepository {
             idCase: orm.idCase,
             caseCode: '',
           },
+      contracts: mapCaseRecordContracts(orm.caseRecord?.contracts),
     };
   }
 }

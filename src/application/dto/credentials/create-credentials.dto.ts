@@ -35,9 +35,4 @@ export class CreateCredentialsDto {
   @IsInt()
   @IsNotEmpty()
   idPerson: number;
-
-  @Type(() => Number)
-  @IsInt()
-  @IsNotEmpty()
-  codeCompany: number;
 }

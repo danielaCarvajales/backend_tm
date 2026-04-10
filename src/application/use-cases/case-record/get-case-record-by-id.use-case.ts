@@ -1,5 +1,8 @@
 import { Inject, Injectable } from '@nestjs/common';
-import {CaseRecordWithRelations, ICaseRecordRepository} from '../../../domain/repositories/case-record.repository';
+import {
+  CaseRecordWithRelations,
+  ICaseRecordRepository,
+} from '../../../domain/repositories/case-record.repository';
 import { CASE_RECORD_REPOSITORY } from '../../tokens/case-record.repository.token';
 
 @Injectable()
@@ -13,13 +16,19 @@ export class GetCaseRecordByIdUseCase {
     idCase: number,
     userId: number,
     role: string,
+    viewerCompanyId?: number,
   ): Promise<CaseRecordWithRelations | null> {
     const record = await this.repository.findByIdWithRelations(idCase);
     if (!record) return null;
 
     const normalizedRole = role?.toLowerCase() ?? '';
-    const isCliente = normalizedRole === 'cliente';
-    if (isCliente && record.holder !== userId) {
+    if (normalizedRole === 'cliente') {
+      return record.holder === userId ? record : null;
+    }
+    if (
+      viewerCompanyId !== undefined &&
+      record.codeCompany !== viewerCompanyId
+    ) {
       return null;
     }
     return record;

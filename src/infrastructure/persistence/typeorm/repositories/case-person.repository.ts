@@ -10,6 +10,7 @@ import {
 } from '../../../../domain/repositories/case-person.repository';
 import { CasePerson as CasePersonOrm } from '../entities/case-person/case-person';
 import { CasePersonMapper } from '../mappers/case-person.mapper';
+import { mapCaseRecordContracts } from '../mappers/contract-embed.mapper';
 
 @Injectable()
 export class CasePersonTypeOrmRepository implements ICasePersonRepository {
@@ -70,6 +71,8 @@ export class CasePersonTypeOrmRepository implements ICasePersonRepository {
         'person.typeDocument',
         'person.nationality',
         'familyRelationship',
+        'caseRecord',
+        'caseRecord.contracts',
       ],
     });
     return orm ? this.mapToWithRelations(orm) : null;
@@ -87,6 +90,8 @@ export class CasePersonTypeOrmRepository implements ICasePersonRepository {
         'person.typeDocument',
         'person.nationality',
         'familyRelationship',
+        'caseRecord',
+        'caseRecord.contracts',
       ],
     });
     return orm ? this.mapToWithRelations(orm) : null;
@@ -134,6 +139,8 @@ export class CasePersonTypeOrmRepository implements ICasePersonRepository {
         'person.typeDocument',
         'person.nationality',
         'familyRelationship',
+        'caseRecord',
+        'caseRecord.contracts',
       ],
       order: { createdAt: 'DESC' },
       skip,
@@ -211,6 +218,7 @@ export class CasePersonTypeOrmRepository implements ICasePersonRepository {
             idFamilyRelationship: 0,
             nameFamilyRelationship: '',
           },
+      contracts: mapCaseRecordContracts(orm.caseRecord?.contracts),
     };
   }
 }

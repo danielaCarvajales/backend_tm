@@ -25,6 +25,7 @@ export interface PersonPaginatedResult<T> {
 
 // Query criteria for paginated listing.
 export interface PersonListQuery {
+  companyId?: number;
   page: number;
   pageSize: number;
   search?: string;
@@ -34,11 +35,12 @@ export interface PersonListQuery {
 export interface IPersonRepository {
   save(entity: Person): Promise<Person>;
   update(entity: Person): Promise<Person>;
-  delete(idPerson: number): Promise<void>;
-  findById(idPerson: number): Promise<Person | null>;
-  findByIdWithRelations(idPerson: number): Promise<PersonWithRelations | null>;
-  findByPersonCode(personCode: string): Promise<Person | null>;
+  delete(idPerson: number, companyId?: number): Promise<void>;
+  findById(idPerson: number, companyId?: number): Promise<Person | null>;
+  findByIdWithRelations(idPerson: number, companyId?: number): Promise<PersonWithRelations | null>;
+  findByPersonCode(personCode: string, companyId?: number): Promise<Person | null>;
   findPaginated(
     query: PersonListQuery,
+    companyId?: number,
   ): Promise<PersonPaginatedResult<PersonWithRelations>>;
 }

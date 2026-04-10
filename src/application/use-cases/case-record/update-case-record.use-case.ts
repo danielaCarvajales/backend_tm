@@ -39,6 +39,9 @@ export class UpdateCaseRecordUseCase {
     const idStateCase = this.canUpdateState(normalizedRole)
       ? (dto.idStateCase ?? existing.idStateCase)
       : existing.idStateCase;
+    const amount = this.canUpdateAmount(normalizedRole)
+      ? (dto.amount?.trim() ?? existing.amount)
+      : existing.amount;
 
     const closingDate = await this.resolveClosingDate(
       existing.idStateCase,
@@ -52,6 +55,7 @@ export class UpdateCaseRecordUseCase {
       existing.holder,
       agent ?? null,
       existing.codeCompany,
+      amount,
       idStateCase,
       existing.createdAt,
       closingDate,
@@ -69,6 +73,10 @@ export class UpdateCaseRecordUseCase {
 
   private canUpdateState(role: string): boolean {
     return role === 'administrador';
+  }
+
+  private canUpdateAmount(role: string): boolean {
+    return role === 'asesor' || role === 'administrador';
   }
 
   private async resolveClosingDate(

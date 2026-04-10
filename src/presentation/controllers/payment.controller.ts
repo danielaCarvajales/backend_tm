@@ -50,6 +50,7 @@ export class PaymentController {
       idCase,
       user.userId,
       user.role,
+      user.codeCompany,
     );
     if (!caseRecord) {
       throw new NotFoundException('Caso no encontrado');

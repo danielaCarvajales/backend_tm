@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { GetCaseRecordByIdUseCase } from '../case-record/get-case-record-by-id.use-case';
-import { GetOrCreateCurrentCaseUseCase } from '../case-record/get-or-create-current-case.use-case';
+import { GetCurrentCaseUseCase } from '../case-record/get-current-case.use-case';
 import { JwtPayload } from '../../../infrastructure/auth/strategies/jwt.strategy';
-
 
 @Injectable()
 export class ResolveCaseIdForCasePersonUseCase {
   constructor(
     private readonly getCaseRecordByIdUseCase: GetCaseRecordByIdUseCase,
-    private readonly getOrCreateCurrentCaseUseCase: GetOrCreateCurrentCaseUseCase,
+    private readonly getCurrentCaseUseCase: GetCurrentCaseUseCase,
   ) {}
 
   async execute(
@@ -20,6 +19,7 @@ export class ResolveCaseIdForCasePersonUseCase {
         idCaseFromBody,
         user.userId,
         user.role,
+        user.codeCompany,
       );
       if (!caseRecord) {
         throw new Error('CASE_NOT_FOUND');
@@ -32,7 +32,7 @@ export class ResolveCaseIdForCasePersonUseCase {
       throw new Error('CASE_ID_REQUIRED_FOR_ROLE');
     }
 
-    const currentCase = await this.getOrCreateCurrentCaseUseCase.execute(
+    const currentCase = await this.getCurrentCaseUseCase.execute(
       user.userId,
       user.codeCompany,
     );

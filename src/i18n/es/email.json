@@ -1,0 +1,38 @@
+{
+  "common": {
+    "greetingPrefix": "Hola",
+    "brandAlt": "TM"
+  },
+  "footer": {
+    "linkInstitutionTitle": "Institución",
+    "linkWebTitle": "Web",
+    "linkPortalTitle": "Portal",
+    "rightsLine": "© {copyrightYear} {companyName}. {rightsSuffix}",
+    "rightsSuffix": "TODOS LOS DERECHOS RESERVADOS."
+  },
+  "welcome": {
+    "subject": "Bienvenido a TM",
+    "heading": "Bienvenido a TM",
+    "buttonDashboard": "Ir al panel",
+    "bodyWithDashboard": "<p>¡Te damos la bienvenida a <strong>TM</strong>!</p><p>Nos complace informarte que tu registro se ha completado exitosamente.A partir de este momento, puedes acceder a la plataforma utilizando tus credenciales. </p><p><strong>Usuario:</strong> {username}<br/><strong>Contraseña:</strong> {password}</p><p>Utiliza estos datos para iniciar sesión. Por seguridad, te recomendamos <strong>cambiar la contraseña</strong> después del primer acceso. Conserva estos datos en un lugar seguro y no los compartas con terceros.</p><p>Dentro de tu cuenta podrás consultar tu información personal, gestionar tus datos y acceder a todos los servicios que tenemos disponibles para ti.</p>",
+    "bodyWithoutDashboard": "<p>¡Te damos la bienvenida a <strong>TM</strong>!</p><p>Nos complace informarte que tu registro se ha completado exitosamente.</p><p><strong>Usuario:</strong> {username}<br/><strong>Contraseña:</strong> {password}</p><p>Utiliza estos datos para iniciar sesión. Por seguridad, te recomendamos <strong>cambiar la contraseña</strong> después del primer acceso. Conserva estos datos en un lugar seguro y no los compartas con terceros.</p><p>¡Gracias por confiar en nosotros!</p>"
+  },
+  "recovery": {
+    "subject": "Recuperación de contraseña — TM",
+    "heading": "Recuperación de contraseña",
+    "buttonReset": "Restablecer contraseña",
+    "bodyHtml": "<p>Hemos recibido una solicitud para <strong>restablecer la contraseña</strong> de tu cuenta en TM.</p><p>Si fuiste tú, utiliza el botón de este correo para continuar. El enlace caduca según la política de seguridad aplicable.</p><p>Si <strong>no</strong> solicitaste este cambio, puedes ignorar este mensaje; tu contraseña actual seguirá siendo válida.</p>"
+  },
+  "caseCreated": {
+    "subject": "Caso {caseCode} creado — TM",
+    "heading": "Nuevo caso registrado",
+    "buttonViewCase": "Ver caso",
+    "bodyWithLink": "<p>Se ha <strong>registrado un nuevo caso con el código {caseCode}</strong> en el sistema.</p><p>A partir de este momento, podrá gestionar integralmente su caso, incluyendo la posibilidad de relacionar personas, administrar su información, adjuntar y consultar documentos, así como realizar el seguimiento correspondiente al trámite.</p><p>Gracias por confiar en TM para la gestión de tu trámite.</p>",
+    "bodyWithoutLink": "<p>Se ha <strong>registrado un nuevo caso con el código {caseCode}</strong> en el sistema.</p><p>Gracias por confiar en TM para la gestión de tu trámite.</p>"
+  },
+  "otp": {
+    "subject": "Tu código de verificación — TM",
+    "heading": "Código de verificación",
+    "bodyHtml": "<p style=\"margin:0 0 12px;font-family:Georgia,Times New Roman,serif;font-weight:400;\">Tu código de verificación de contraseña es:</p><p style=\"margin:16px 0;font-family:Georgia,Times New Roman,serif;font-size:30px;font-weight:400;color:#0d47a1;text-align:center;\">{otpCode}</p><p style=\"margin:0 0 8px;font-family:Georgia,Times New Roman,serif;font-size:14px;font-weight:400;\">Este código tiene una vigencia de <strong>{expiresMinutes} minutos</strong>. Por motivos de seguridad, no debe ser compartido con terceros.</p>"
+  }
+}

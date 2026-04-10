@@ -12,11 +12,6 @@ export class CreatePersonRoleDto {
   @IsNotEmpty({ message: 'El ID de rol es requerido' })
   idRole: number;
 
-  @Type(() => Number)
-  @IsInt()
-  @IsNotEmpty({ message: 'El código de empresa es requerido' })
-  codeCompany: number;
-
   @IsOptional()
   @Type(() => Number)
   @IsInt()

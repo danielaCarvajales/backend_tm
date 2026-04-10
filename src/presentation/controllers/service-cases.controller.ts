@@ -1,4 +1,17 @@
-import {Body, ConflictException, Controller, Delete, Get, NotFoundException, Param, ParseIntPipe, Post, Put, Query, UseGuards} from '@nestjs/common';
+import {
+  Body,
+  ConflictException,
+  Controller,
+  Delete,
+  Get,
+  NotFoundException,
+  Param,
+  ParseIntPipe,
+  Post,
+  Put,
+  Query,
+  UseGuards,
+} from '@nestjs/common';
 import { CreateServiceCasesDto } from '../../application/dto/service-cases/create-service-cases.dto';
 import { QueryServiceCasesDto } from '../../application/dto/service-cases/query-service-cases.dto';
 import { UpdateServiceCasesDto } from '../../application/dto/service-cases/update-service-cases.dto';
@@ -7,7 +20,7 @@ import { DeleteServiceCasesUseCase } from '../../application/use-cases/service-c
 import { GetServiceCasesByIdUseCase } from '../../application/use-cases/service-cases/get-service-cases-by-id.use-case';
 import { ListServiceCasesUseCase } from '../../application/use-cases/service-cases/list-service-cases.use-case';
 import { UpdateServiceCasesUseCase } from '../../application/use-cases/service-cases/update-service-cases.use-case';
-import { GetOrCreateCurrentCaseUseCase } from '../../application/use-cases/case-record/get-or-create-current-case.use-case';
+import { GetCurrentCaseUseCase } from '../../application/use-cases/case-record/get-current-case.use-case';
 import { CurrentUser } from '../../infrastructure/auth/decorators/current-user.decorator';
 import { Roles } from '../../infrastructure/auth/decorators/roles.decorator';
 import { JwtPayload } from '../../infrastructure/auth/strategies/jwt.strategy';
@@ -21,23 +34,18 @@ export class ServiceCasesController {
     private readonly deleteUseCase: DeleteServiceCasesUseCase,
     private readonly getByIdUseCase: GetServiceCasesByIdUseCase,
     private readonly listUseCase: ListServiceCasesUseCase,
-    private readonly getOrCreateCurrentUseCase: GetOrCreateCurrentCaseUseCase,
+    private readonly getCurrentCaseUseCase: GetCurrentCaseUseCase,
   ) {}
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('cliente')
-  async create(@Body() dto: CreateServiceCasesDto,@CurrentUser() user: JwtPayload ) {
+  @Roles('administrador', 'asesor')
+  async create(
+    @Body() dto: CreateServiceCasesDto,
+    @CurrentUser() user: JwtPayload,
+  ) {
     try {
-      const currentCase = await this.getOrCreateCurrentUseCase.execute(
-        user.userId,
-        user.codeCompany,
-      );
-      const entity = await this.createUseCase.execute(
-        dto,
-        currentCase.idCase,
-        user.codeCompany,
-      );
+      const entity = await this.createUseCase.execute(dto, user.codeCompany);
       return {
         data: this.toResponse(entity),
         message: 'Servicio asociado al caso creado exitosamente',
@@ -48,6 +56,12 @@ export class ServiceCasesController {
         err.message === 'SERVICE_COMPANY_NOT_FOUND'
       ) {
         throw new NotFoundException('Servicio no encontrado');
+      }
+      if (
+        err instanceof Error &&
+        err.message === 'CASE_RECORD_NOT_FOUND'
+      ) {
+        throw new NotFoundException('Caso no encontrado');
       }
       if (
         err instanceof Error &&
@@ -63,21 +77,19 @@ export class ServiceCasesController {
 
   @Put(':id')
   @UseGuards(RolesGuard)
-  @Roles('cliente')
+  @Roles('administrador', 'asesor')
   async update(
     @Param('id', ParseIntPipe) idServiceCases: number,
+    @Query('idCase', ParseIntPipe) idCase: number,
     @Body() dto: UpdateServiceCasesDto,
     @CurrentUser() user: JwtPayload,
   ) {
     try {
-      const currentCase = await this.getOrCreateCurrentUseCase.execute(
-        user.userId,
-        user.codeCompany,
-      );
       const entity = await this.updateUseCase.execute(
         idServiceCases,
         dto,
-        currentCase.idCase,
+        idCase,
+        user.codeCompany,
       );
       return {
         data: this.toResponse(entity),
@@ -90,23 +102,26 @@ export class ServiceCasesController {
       ) {
         throw new NotFoundException('Servicio del caso no encontrado');
       }
+      if (
+        err instanceof Error &&
+        err.message === 'CASE_RECORD_NOT_FOUND'
+      ) {
+        throw new NotFoundException('Caso no encontrado');
+      }
       throw err;
     }
   }
 
   @Delete(':id')
   @UseGuards(RolesGuard)
-  @Roles('cliente')
+  @Roles('administrador', 'asesor')
   async delete(
     @Param('id', ParseIntPipe) idServiceCases: number,
+    @Query('idCase', ParseIntPipe) idCase: number,
     @CurrentUser() user: JwtPayload,
   ) {
     try {
-      const currentCase = await this.getOrCreateCurrentUseCase.execute(
-        user.userId,
-        user.codeCompany,
-      );
-      await this.deleteUseCase.execute(idServiceCases, currentCase.idCase);
+      await this.deleteUseCase.execute(idServiceCases, idCase, user.codeCompany);
       return {
         message: 'Servicio del caso eliminado exitosamente',
       };
@@ -117,58 +132,82 @@ export class ServiceCasesController {
       ) {
         throw new NotFoundException('Servicio del caso no encontrado');
       }
+      if (
+        err instanceof Error &&
+        err.message === 'CASE_RECORD_NOT_FOUND'
+      ) {
+        throw new NotFoundException('Caso no encontrado');
+      }
       throw err;
     }
   }
 
   @Get()
   @UseGuards(RolesGuard)
-  @Roles('cliente')
   async list(
     @Query() query: QueryServiceCasesDto,
     @CurrentUser() user: JwtPayload,
   ) {
-    const currentCase = await this.getOrCreateCurrentUseCase.execute(
-      user.userId,
-      user.codeCompany,
-    );
-    const result = await this.listUseCase.execute(query, currentCase.idCase);
-    return {
-      message: 'Servicios del caso obtenidos exitosamente',
-      data: result.data.map((entity) => this.toResponseWithRelations(entity)),
-      pagination: {
-        totalItems: result.totalItems,
-        totalPages: result.totalPages,
-        currentPage: result.currentPage,
-        pageSize: result.pageSize,
-        hasNextPage: result.hasNextPage,
-        hasPreviousPage: result.hasPreviousPage,
-      },
-    };
+    try {
+      const currentCase = await this.getCurrentCaseUseCase.execute(
+        user.userId,
+        user.codeCompany,
+      );
+      const result = await this.listUseCase.execute(query, currentCase.idCase);
+      return {
+        message: 'Servicios del caso obtenidos exitosamente',
+        data: result.data.map((entity) => this.toResponseWithRelations(entity)),
+        pagination: {
+          totalItems: result.totalItems,
+          totalPages: result.totalPages,
+          currentPage: result.currentPage,
+          pageSize: result.pageSize,
+          hasNextPage: result.hasNextPage,
+          hasPreviousPage: result.hasPreviousPage,
+        },
+      };
+    } catch (err) {
+      if (
+        err instanceof Error &&
+        err.message === 'CASE_RECORD_NOT_FOUND'
+      ) {
+        throw new NotFoundException('No tiene un caso asignado');
+      }
+      throw err;
+    }
   }
 
   @Get(':id')
   @UseGuards(RolesGuard)
-  @Roles('cliente')
   async getById(
     @Param('id', ParseIntPipe) idServiceCases: number,
     @CurrentUser() user: JwtPayload,
   ) {
-    const currentCase = await this.getOrCreateCurrentUseCase.execute(
-      user.userId,
-      user.codeCompany,
-    );
-    const entity = await this.getByIdUseCase.execute(
-      idServiceCases,
-      currentCase.idCase,
-    );
-    if (!entity) {
-      throw new NotFoundException('Servicio del caso no encontrado');
+    try {
+      const currentCase = await this.getCurrentCaseUseCase.execute(
+        user.userId,
+        user.codeCompany,
+      );
+      const entity = await this.getByIdUseCase.execute(
+        idServiceCases,
+        currentCase.idCase,
+      );
+      if (!entity) {
+        throw new NotFoundException('Servicio del caso no encontrado');
+      }
+      return {
+        data: this.toResponseWithRelations(entity),
+        message: 'Servicio del caso encontrado exitosamente',
+      };
+    } catch (err) {
+      if (
+        err instanceof Error &&
+        err.message === 'CASE_RECORD_NOT_FOUND'
+      ) {
+        throw new NotFoundException('No tiene un caso asignado');
+      }
+      throw err;
     }
-    return {
-      data: this.toResponseWithRelations(entity),
-      message: 'Servicio del caso encontrado exitosamente',
-    };
   }
 
   private toResponse(entity: {
@@ -195,6 +234,13 @@ export class ServiceCasesController {
     createdAt: Date;
     serviceCompany: { idService: number; name: string; description: string };
     caseRecord: { idCase: number; caseCode: string };
+    contracts: Array<{
+      idContract: number;
+      contractCode: string;
+      idCase: number;
+      digitalSignature: string | null;
+      createdAt: Date;
+    }>;
   }) {
     return {
       idServiceCases: entity.idServiceCases,
@@ -204,6 +250,7 @@ export class ServiceCasesController {
       createdAt: entity.createdAt,
       service: entity.serviceCompany,
       case: entity.caseRecord,
+      contracts: entity.contracts,
     };
   }
 }

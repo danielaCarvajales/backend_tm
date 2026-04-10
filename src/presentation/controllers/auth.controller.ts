@@ -40,7 +40,8 @@ export class AuthController {
   @HttpCode(HttpStatus.OK)
   async sendOtp(@Body() dto: SendOtpDto, @Req() req: Request) {
     const ip = getClientIp(req);
-    return this.sendOtpUseCase.execute(dto, ip);
+    const acceptLanguage = req.headers['accept-language'] as string | undefined;
+    return this.sendOtpUseCase.execute(dto, ip, acceptLanguage);
   }
 
   @Public()

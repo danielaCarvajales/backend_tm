@@ -27,6 +27,15 @@ export interface CaseRecordServiceItem {
   serviceDescription: string;
 }
 
+/** Contratos del caso (lectura en agregados de caso / servicios / personas). */
+export interface CaseRecordContractItem {
+  idContract: number;
+  contractCode: string;
+  idCase: number;
+  digitalSignature: string | null;
+  createdAt: Date;
+}
+
 export interface CaseRecordPersonItem {
   idCasePerson: number;
   idPerson: number;
@@ -55,6 +64,7 @@ export interface CaseRecordWithRelations {
   holder: number;
   agent: number | null;
   codeCompany: number;
+  amount: string;
   idStateCase: number;
   createdAt: Date;
   closingDate: Date | null;
@@ -101,6 +111,7 @@ export interface CaseRecordWithRelations {
   };
   services: CaseRecordServiceItem[];
   persons: CaseRecordPersonItem[];
+  contracts: CaseRecordContractItem[];
 }
 
 export interface ICaseRecordRepository {

@@ -33,24 +33,29 @@ export class PersonTypeOrmRepository implements IPersonRepository {
   }
 
   // Deletes Person entity.
-  async delete(idPerson: number): Promise<void> {
-    await this.repository.delete(idPerson);
+  async delete(idPerson: number, companyId?: number): Promise<void> {
+    if (companyId === undefined) {
+      await this.repository.delete(idPerson);
+      return;
+    }
+    await this.repository.delete({ idPerson, codeCompany: companyId });
   }
 
   // Finds a Person entity by its ID.
-  async findById(idPerson: number): Promise<Person | null> {
-    const orm = await this.repository.findOne({
-      where: { idPerson },
-    });
+  async findById(idPerson: number, companyId?: number): Promise<Person | null> {
+    const where = companyId === undefined ? { idPerson } : { idPerson, codeCompany: companyId };
+    const orm = await this.repository.findOne({ where });
     return orm ? PersonMapper.toDomain(orm) : null;
   }
 
   // Finds a Person entity by its ID with full relations (typeDocument, nationality).
   async findByIdWithRelations(
     idPerson: number,
+    companyId?: number,
   ): Promise<PersonWithRelations | null> {
+    const where = companyId === undefined ? { idPerson } : { idPerson, codeCompany: companyId };
     const orm = await this.repository.findOne({
-      where: { idPerson },
+      where,
       relations: ['typeDocument', 'nationality'],
     });
     if (!orm) return null;
@@ -79,19 +84,20 @@ export class PersonTypeOrmRepository implements IPersonRepository {
   }
 
   // Finds a Person entity by personCode (for uniqueness validation).
-  async findByPersonCode(personCode: string): Promise<Person | null> {
-    const orm = await this.repository.findOne({
-      where: { personCode },
-    });
+  async findByPersonCode(personCode: string, companyId?: number): Promise<Person | null> {
+    const where = companyId === undefined ? { personCode } : { personCode, codeCompany: companyId };
+    const orm = await this.repository.findOne({ where });
     return orm ? PersonMapper.toDomain(orm) : null;
   }
 
   // Finds paginated Person entities with full relations.
   async findPaginated(
     query: PersonListQuery,
+    companyId?: number,
   ): Promise<PersonPaginatedResult<PersonWithRelations>> {
-    const { page, pageSize, search } = query;
+    const { page, pageSize, search, companyId: queryCompanyId } = query;
     const skip = (page - 1) * pageSize;
+    const effectiveCompanyId = companyId ?? queryCompanyId;
 
     const qb = this.repository
       .createQueryBuilder('p')
@@ -101,17 +107,23 @@ export class PersonTypeOrmRepository implements IPersonRepository {
         'p.idPerson',
         'p.personCode',
         'p.fullName',
+        'p.codeCompany',
         'p.idTypeDocument',
         'p.documentNumber',
         'p.birthdate',
         'p.idNationality',
         'p.phone',
         'p.email',
+        'p.language',
         'typeDoc.idTypeIdentificationDocument',
         'typeDoc.name',
         'nationality.idNacionality',
         'nationality.name',
       ]);
+
+    if (effectiveCompanyId !== undefined) {
+      qb.andWhere('p.codeCompany = :companyId', { companyId: effectiveCompanyId });
+    }
 
     if (search && search.trim() !== '') {
       const term = `%${search.trim()}%`;

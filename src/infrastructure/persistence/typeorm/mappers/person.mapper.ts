@@ -6,6 +6,7 @@ export class PersonMapper {
   static toDomain(orm: PersonOrm): Person {
     return new Person(
       orm.idPerson,
+      orm.codeCompany,
       orm.personCode ?? '',
       orm.fullName,
       orm.idTypeDocument,
@@ -14,6 +15,7 @@ export class PersonMapper {
       orm.idNationality,
       orm.phone,
       orm.email,
+      orm.language ?? 'es',
     );
   }
 
@@ -22,12 +24,14 @@ export class PersonMapper {
     const orm = new PersonOrm(
       domain.personCode,
       domain.fullName,
+      domain.companyId,
       domain.idTypeDocument,
       domain.documentNumber,
       domain.birthdate,
       domain.phone,
       domain.idNationality,
       domain.email,
+      domain.language,
     );
     if (domain.idPerson !== undefined) {
       orm.idPerson = domain.idPerson;

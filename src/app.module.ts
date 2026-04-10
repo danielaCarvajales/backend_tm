@@ -28,10 +28,13 @@ import { PaymentModule } from './presentation/payment.module';
 import { ContractModule } from './presentation/contract.module';
 import { EmailModule } from './presentation/email.module';
 import { RedisModule } from './infrastructure/redis/redis.module';
+import { AppI18nModule } from './infrastructure/i18n/app-i18n.module';
+import { RegisterClientModule } from './presentation/register-client.module';
 
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, envFilePath: '.env' }),
+    AppI18nModule,
     ConnectionModule,
     RedisModule,
     AuthModule,
@@ -58,6 +61,7 @@ import { RedisModule } from './infrastructure/redis/redis.module';
     PaymentModule,
     ContractModule,
     EmailModule,
+    RegisterClientModule,
   ],
   controllers: [],
   providers: [

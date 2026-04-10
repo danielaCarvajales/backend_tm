@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="{{htmlLang}}">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -16,7 +16,7 @@
                 <tr>
                   {{#if logoUrl}}
                   <td style="{{styles.brandLogoCell}}">
-                    <img src="{{logoUrl}}" alt="TM" width="30" height="30" style="{{styles.brandLogo}}" />
+                    <img src="{{logoUrl}}" alt="{{brandAlt}}" width="30" height="30" style="{{styles.brandLogo}}" />
                   </td>
                   {{/if}}
                   <td style="{{styles.brandTitleCell}}">
@@ -32,10 +32,10 @@
           <tr>
             <td style="{{styles.titleRow}}">
               <h1 style="{{styles.titleHeading}}">{{title}}</h1>
-              <p style="{{styles.greeting}}">Hola {{name}},</p>
+              <p style="{{styles.greeting}}">{{greetingPrefix}} {{name}},</p>
             </td>
           </tr>
-          <tr>  
+          <tr>
             <td style="{{styles.messageCell}}">
               {{{messageHtml}}}
             </td>

@@ -25,6 +25,9 @@ export class CaseRecord {
     @Column({ type: "integer", name: "code_company", nullable: false })
     public codeCompany: number;
 
+    @Column({ type: "decimal", precision: 14, scale: 2, name: "amount", nullable: false })
+    public amount: string;
+
     @Column({ type: "integer", name: "id_state_case", nullable: false })
     public idStateCase: number;
 
@@ -74,12 +77,13 @@ export class CaseRecord {
     @OneToMany(() => Contract, (contract) => contract.caseRecord)
     public contracts?: Contract[];
 
-    constructor(idCase: number, caseCode: string, holder: number, agent: number | null, codeCompany: number, idStateCase: number, createdAt: Date, closingDate: Date | null) {
+    constructor(idCase: number, caseCode: string, holder: number, agent: number | null, codeCompany: number, amount: string, idStateCase: number, createdAt: Date, closingDate: Date | null) {
         this.idCase = idCase;
         this.caseCode = caseCode;
         this.holder = holder;
         this.agent = agent;
         this.codeCompany = codeCompany;
+        this.amount = amount;
         this.idStateCase = idStateCase;
         this.createdAt = createdAt;
         this.closingDate = closingDate;

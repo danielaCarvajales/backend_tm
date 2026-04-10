@@ -12,7 +12,7 @@
               <tr>
                 <td style="{{styles.iconCell}}">
                   <a href="{{linkInstitution}}" target="_blank" rel="noopener noreferrer" style="{{styles.iconLink}}"
-                    title="Institución">
+                    title="{{titleInstitution}}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                       stroke="#242454" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"
                       aria-hidden="true">
@@ -25,7 +25,7 @@
                 </td>
                 <td style="{{styles.iconCell}}">
                   <a href="{{linkWeb}}" target="_blank" rel="noopener noreferrer" style="{{styles.iconLink}}"
-                    title="Web">
+                    title="{{titleWeb}}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none"
                       stroke="#242454" stroke-width="1.6" aria-hidden="true">
                       <circle cx="12" cy="12" r="10" />
@@ -37,7 +37,7 @@
                 </td>
                 <td style="{{styles.iconCell}}">
                   <a href="{{linkPortal}}" target="_blank" rel="noopener noreferrer" style="{{styles.iconLink}}"
-                    title="Portal">
+                    title="{{titlePortal}}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="#242454"
                       aria-hidden="true">
                       <path
@@ -51,7 +51,7 @@
         </tr>
       </table>
       <div style="{{styles.divider}}"></div>
-      <p style="{{styles.legalCopy}}">© {{copyrightYear}} {{companyName}}. TODOS LOS DERECHOS RESERVADOS.</p>
+      <p style="{{styles.legalCopy}}">{{rightsLine}}</p>
     </td>
   </tr>
 </table>

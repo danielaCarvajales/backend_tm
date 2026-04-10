@@ -17,18 +17,18 @@ export class SendOtpEmailService {
     private readonly config: ConfigService,
   ) {}
 
-  async send(to: string, displayName: string, plainOtp: string): Promise<void> {
+  async send(
+    to: string,
+    displayName: string,
+    plainOtp: string,
+    language: string = 'es',
+  ): Promise<void> {
     const ttlSec = this.config.get<number>('OTP_TTL_SECONDS', 600);
     const expiresMinutes = Math.max(1, Math.floor(ttlSec / 60));
-    const subject =
-      this.config.get<string>('EMAIL_SUBJECT_OTP') ?? 'Tu código de verificación — TM';
-    const title =
-      this.config.get<string>('EMAIL_HEADING_OTP') ?? 'Código de verificación';
-    const html = await this.templates.renderOtp({
+    const { subject, html } = await this.templates.renderOtp(language, {
       name: displayName,
       otpCode: plainOtp,
       expiresMinutes,
-      title,
     });
     await this.emailSender.sendEmail({
       to,

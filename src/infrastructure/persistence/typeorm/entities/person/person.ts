@@ -6,6 +6,7 @@ import { CaseRecord } from "../case-record/case-record";
 import { CasePerson } from "../case-person/case-person";
 import { PersonDocuments } from "../person-documents/person-documents";
 import { Credentials } from "../credentials/credentials";
+import { Company } from "../company/company";
 
 @Entity("persons", { schema: "public" })
 export class Person {
@@ -18,6 +19,9 @@ export class Person {
 
     @Column({ type: "varchar", name: "full_name", length: 250, nullable: false })
     public fullName: string;
+
+    @Column({ type: "integer", name: "code_company", nullable: false })
+    public codeCompany: number;
 
     @Column({ type: "integer", name: "id_type_document", nullable: false })
     public idTypeDocument: number;
@@ -36,6 +40,16 @@ export class Person {
 
     @Column({ type: "varchar", name: "email", length: 250, nullable: false })
     public email: string;
+
+    @Column({ type: "varchar", name: "language", length: 2, nullable: false, default: "es" })
+    public language: string;
+
+    @ManyToOne(() => Company, {
+        onDelete: "RESTRICT",
+        onUpdate: "CASCADE",
+    })
+    @JoinColumn([{ name: "code_company" }])
+    public company?: Company;
 
     @ManyToOne(() => IdentityDocumentTypes, (idTypeDocument) => idTypeDocument.person, {
         onDelete: "RESTRICT",
@@ -71,14 +85,16 @@ export class Person {
     @OneToMany(() => Credentials, (credentials) => credentials.person)
     public credentials?: Credentials[];
 
-    constructor(personCode: string, fullName: string, idTypeDocument: number, documentNumber: string, birthdate: Date, phone: string, idNationality: number, email: string) {
+    constructor(personCode: string, fullName: string, codeCompany: number, idTypeDocument: number, documentNumber: string, birthdate: Date, phone: string, idNationality: number, email: string, language: string = "es") {
         this.personCode = personCode;
         this.fullName = fullName;
+        this.codeCompany = codeCompany;
         this.idTypeDocument = idTypeDocument;
         this.documentNumber = documentNumber;
         this.birthdate = birthdate;
         this.phone = phone;
         this.idNationality = idNationality;
         this.email = email;
+        this.language = language;
     }
 }

@@ -7,6 +7,7 @@ import { Company } from '../../../domain/entities/company.entity';
 import { ICompanyRepository } from '../../../domain/repositories/company.repository';
 import { QueryCompanyDto } from '../../dto/company/query-company.dto';
 import { COMPANY_REPOSITORY } from '../../tokens/company.repository.token';
+import { AuthContext, ensureSuperAdmin } from '../../auth/auth-context';
 
 @Injectable()
 export class ListCompaniesUseCase {
@@ -15,7 +16,11 @@ export class ListCompaniesUseCase {
     private readonly repository: ICompanyRepository,
   ) {}
 
-  async execute(query: QueryCompanyDto): Promise<CompanyPaginatedResult<Company>> {
+  async execute(
+    query: QueryCompanyDto,
+    authContext: AuthContext,
+  ): Promise<CompanyPaginatedResult<Company>> {
+    ensureSuperAdmin(authContext);
     const domainQuery: CompanyListQuery = {
       page: query.page ?? 1,
       pageSize: query.pageSize ?? 10,

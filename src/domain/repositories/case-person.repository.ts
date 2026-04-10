@@ -1,4 +1,5 @@
 import { CasePerson } from '../entities/case-person.entity';
+import type { CaseRecordContractItem } from './case-record.repository';
 
 export interface CasePersonWithRelations {
   idCasePerson: number;
@@ -29,6 +30,8 @@ export interface CasePersonWithRelations {
     idFamilyRelationship: number;
     nameFamilyRelationship: string;
   };
+  /** Contratos del caso al que pertenece la persona. */
+  contracts: CaseRecordContractItem[];
 }
 
 export interface ExistingPersonInCase {

@@ -4,6 +4,7 @@ import { ICredentialsRepository } from '../../../domain/repositories/credentials
 import { UpdateCredentialsDto } from '../../dto/credentials/update-credentials.dto';
 import { CREDENTIALS_REPOSITORY } from '../../tokens/credentials.repository.token';
 import { hashPassword } from '../../../infrastructure/auth/utils/password.util';
+import { AuthContext, ensureCompanyAccess } from '../../auth/auth-context';
 
 @Injectable()
 export class UpdateCredentialsUseCase {
@@ -12,10 +13,17 @@ export class UpdateCredentialsUseCase {
     private readonly repository: ICredentialsRepository,
   ) {}
 
-  async execute(id: number, dto: UpdateCredentialsDto): Promise<Credentials> {
+  async execute(
+    id: number,
+    dto: UpdateCredentialsDto,
+    authContext?: AuthContext,
+  ): Promise<Credentials> {
     const existing = await this.repository.findById(id);
     if (!existing) {
       throw new Error('CREDENTIALS_NOT_FOUND');
+    }
+    if (authContext) {
+      ensureCompanyAccess(authContext, existing.codeCompany);
     }
     const password = dto.password
       ? await hashPassword(dto.password)
@@ -27,7 +35,7 @@ export class UpdateCredentialsUseCase {
       dto.state ?? existing.state,
       dto.lastAccess ? new Date(dto.lastAccess) : existing.lastAccess,
       dto.idPerson ?? existing.idPerson,
-      dto.codeCompany ?? existing.codeCompany,
+      existing.codeCompany,
       dto.failedAttempts ?? existing.failedAttempts,
       dto.accountLockedUntil !== undefined
         ? (dto.accountLockedUntil ? new Date(dto.accountLockedUntil) : null)

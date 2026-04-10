@@ -21,5 +21,6 @@ import { RoleTypeOrmRepository } from '../infrastructure/persistence/typeorm/rep
     GetRoleByIdUseCase,
     ListRolesUseCase,
   ],
+  exports: [ROLE_REPOSITORY],
 })
 export class RoleModule {}

@@ -7,7 +7,10 @@ describe('SendOtpEmailService', () => {
   it('renders template and sends email', async () => {
     const sendEmail = jest.fn().mockResolvedValue(undefined);
     const emailSender = { sendEmail } as unknown as EmailSenderPort;
-    const renderOtp = jest.fn().mockResolvedValue('<html></html>');
+    const renderOtp = jest.fn().mockResolvedValue({
+      html: '<html></html>',
+      subject: 'Subject',
+    });
     const templates = { renderOtp } as unknown as EmailTemplatePort;
     const config = {
       get: jest.fn((key: string, def: unknown) => {
@@ -24,14 +27,14 @@ describe('SendOtpEmailService', () => {
       config,
     );
 
-    await service.send('u@example.com', 'User', '123456');
+    await service.send('u@example.com', 'User', '123456', 'en');
 
     expect(renderOtp).toHaveBeenCalledWith(
+      'en',
       expect.objectContaining({
         name: 'User',
         otpCode: '123456',
         expiresMinutes: 10,
-        title: 'Heading',
       }),
     );
     expect(sendEmail).toHaveBeenCalledWith(

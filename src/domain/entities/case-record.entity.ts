@@ -5,6 +5,7 @@ export class CaseRecord {
     public readonly holder: number,
     public readonly agent: number | null,
     public readonly codeCompany: number,
+    public readonly amount: string,
     public readonly idStateCase: number,
     public readonly createdAt: Date,
     public readonly closingDate: Date | null,

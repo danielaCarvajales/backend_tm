@@ -40,6 +40,7 @@ export class CasePersonController {
       idCase,
       user.userId,
       user.role,
+      user.codeCompany,
     );
     if (!caseRecord) {
       throw new NotFoundException('Caso no encontrado');
@@ -48,7 +49,6 @@ export class CasePersonController {
 
   @Post()
   @UseGuards(RolesGuard)
-  @Roles('cliente')
   async create(@Body() dto: CreateCasePersonDto, @CurrentUser() user: JwtPayload) {
     try {
       const idCase = await this.resolveCaseIdUseCase.execute(user, dto.idCase);
@@ -243,6 +243,13 @@ export class CasePersonController {
       idFamilyRelationship: number;
       nameFamilyRelationship: string;
     };
+    contracts: Array<{
+      idContract: number;
+      contractCode: string;
+      idCase: number;
+      digitalSignature: string | null;
+      createdAt: Date;
+    }>;
   }) {
     return {
       idCasePerson: entity.idCasePerson,
@@ -254,6 +261,7 @@ export class CasePersonController {
       observation: entity.observation,
       person: entity.person,
       familyRelationship: entity.familyRelationship,
+      contracts: entity.contracts,
     };
   }
 }

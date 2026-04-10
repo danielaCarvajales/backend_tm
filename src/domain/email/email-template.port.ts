@@ -4,16 +4,26 @@ import type {
   RecoveryEmailTemplateContext,
   WelcomeEmailTemplateContext,
 } from './email-template-contexts';
+import type { RenderedEmail } from './rendered-email';
 
-//Puerto: renderizado de plantillas
 export interface EmailTemplatePort {
-  renderRecovery(context: RecoveryEmailTemplateContext): Promise<string>;
+  renderRecovery(
+    language: string,
+    context: RecoveryEmailTemplateContext,
+  ): Promise<RenderedEmail>;
 
-  renderWelcome(context: WelcomeEmailTemplateContext): Promise<string>;
+  renderWelcome(
+    language: string,
+    context: WelcomeEmailTemplateContext,
+  ): Promise<RenderedEmail>;
 
   renderCaseCreated(
+    language: string,
     context: CaseCreatedEmailTemplateContext,
-  ): Promise<string>;
+  ): Promise<RenderedEmail>;
 
-  renderOtp(context: OtpEmailTemplateContext): Promise<string>;
+  renderOtp(
+    language: string,
+    context: OtpEmailTemplateContext,
+  ): Promise<RenderedEmail>;
 }

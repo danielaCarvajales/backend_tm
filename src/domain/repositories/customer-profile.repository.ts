@@ -14,6 +14,7 @@ export interface CustomerProfileListQuery {
   page: number;
   pageSize: number;
   search?: string;
+  codeCompany?: number;
 }
 
 export interface ClientProfileFull {
@@ -44,6 +45,10 @@ export interface ICustomerProfileRepository {
   update(entity: CustomerProfile): Promise<CustomerProfile>;
   delete(idCustomerProfile: number): Promise<void>;
   findById(idCustomerProfile: number): Promise<CustomerProfile | null>;
+  findByIdForCompany(
+    idCustomerProfile: number,
+    codeCompany: number,
+  ): Promise<CustomerProfile | null>;
   findByCodeCustomer(codeCustomer: string): Promise<CustomerProfile | null>;
   findByIdPersonRole(idPersonRole: number): Promise<CustomerProfile | null>;
   findFullProfileByIdPersonRole(idPersonRole: number): Promise<ClientProfileFull | null>;
